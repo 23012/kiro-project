@@ -1,0 +1,435 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .app {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: #F0F2F5;
+    min-height: 720px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 0.5px solid #D6DAE0;
+  }
+
+  .header {
+    background: #0D2D6B;
+    padding: 0 20px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .header-logo {
+    width: 32px;
+    height: 32px;
+    background: #1E4DA0;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255,255,255,0.2);
+    flex-shrink: 0;
+  }
+
+  .header-logo svg { width: 18px; height: 18px; fill: #7EB3FF; }
+
+  .header-title { font-size: 14px; font-weight: 600; color: #fff; letter-spacing: -0.2px; }
+  .header-sub { font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 1px; }
+
+  .btn-new-chat {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.1);
+    border: 0.5px solid rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.85);
+    font-size: 12px;
+    font-family: 'Noto Sans KR', sans-serif;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-new-chat:hover { background: rgba(255,255,255,0.18); }
+  .btn-new-chat svg { width: 14px; height: 14px; stroke: rgba(255,255,255,0.85); fill: none; }
+
+  .chat-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: #F0F2F5;
+  }
+
+  .msg-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .msg-row.user { flex-direction: row-reverse; }
+
+  .avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .avatar.bot { background: #1E4DA0; }
+  .avatar.bot svg { width: 16px; height: 16px; fill: #7EB3FF; }
+  .avatar.user { background: #E4E7EC; border: 0.5px solid #D6DAE0; color: #5A5F69; font-size: 11px; }
+
+  .bubble {
+    max-width: 75%;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: #1A1D23;
+  }
+
+  .bubble-inner {
+    background: #FFFFFF;
+    border: 0.5px solid #D6DAE0;
+    border-radius: 0 12px 12px 12px;
+    padding: 12px 14px;
+  }
+  .msg-row.user .bubble-inner {
+    background: #0D2D6B;
+    border-color: #0D2D6B;
+    color: #fff;
+    border-radius: 12px 0 12px 12px;
+  }
+
+  .bubble-time {
+    font-size: 11px;
+    color: #8C919A;
+    margin-top: 4px;
+    padding: 0 4px;
+  }
+  .msg-row.user .bubble-time { text-align: right; }
+
+  .file-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(255,255,255,0.12);
+    border: 0.5px solid rgba(255,255,255,0.22);
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 8px;
+  }
+  .file-chip svg { width: 14px; height: 14px; fill: none; stroke: rgba(255,255,255,0.7); }
+
+  .result-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-top: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .result-table th {
+    background: #EEF3FB;
+    color: #0D2D6B;
+    font-weight: 500;
+    padding: 7px 10px;
+    text-align: left;
+    border: 0.5px solid #C5D4ED;
+    font-size: 11.5px;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+  .result-table td {
+    padding: 6px 10px;
+    border: 0.5px solid #D6DAE0;
+    color: #1A1D23;
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  .result-table tr:nth-child(even) td { background: #F5F6F8; }
+  .result-table .field-name { color: #5A5F69; font-family: 'Noto Sans KR', sans-serif; white-space: nowrap; width: 120px; font-size: 12px; }
+  .result-table .missing { color: #A32D2D; font-style: italic; font-family: 'Noto Sans KR', sans-serif; }
+
+  .result-note {
+    margin-top: 10px;
+    padding: 9px 12px;
+    background: #FFF8EA;
+    border-left: 3px solid #EF9F27;
+    border-radius: 0 6px 6px 0;
+    font-size: 12px;
+    color: #633806;
+    line-height: 1.55;
+  }
+
+  .copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 10px;
+    padding: 5px 12px;
+    font-size: 11.5px;
+    background: #F5F6F8;
+    border: 0.5px solid #D6DAE0;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #5A5F69;
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: background 0.15s;
+  }
+  .copy-btn:hover { background: #ECEEF1; }
+  .copy-btn svg { width: 13px; height: 13px; stroke: #5A5F69; fill: none; }
+
+  .input-area {
+    flex-shrink: 0;
+    padding: 14px 16px;
+    background: #FFFFFF;
+    border-top: 0.5px solid #D6DAE0;
+  }
+
+  .input-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #F5F6F8;
+    border: 0.5px solid #D6DAE0;
+    border-radius: 12px;
+    padding: 8px 12px;
+  }
+
+  .attach-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 0.5px solid #D6DAE0;
+    background: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .attach-btn:hover { background: #ECEEF1; }
+  .attach-btn svg { width: 15px; height: 15px; stroke: #5A5F69; fill: none; }
+
+  .input-field {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 13.5px;
+    color: #1A1D23;
+    font-family: 'Noto Sans KR', sans-serif;
+    resize: none;
+    height: 36px;
+    padding: 6px 0;
+    line-height: 1.5;
+  }
+  .input-field::placeholder { color: #8C919A; }
+
+  .send-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #0D2D6B;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .send-btn:hover { background: #1E4DA0; }
+  .send-btn svg { width: 15px; height: 15px; stroke: #fff; fill: none; }
+
+  .input-hint {
+    text-align: center;
+    font-size: 11px;
+    color: #8C919A;
+    margin-top: 8px;
+  }
+
+  .msg-text p + p { margin-top: 6px; }
+  .msg-text strong { font-weight: 500; }
+
+  .divider {
+    text-align: center;
+    font-size: 11px;
+    color: #8C919A;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 4px 0;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 0.5px;
+    background: #D6DAE0;
+  }
+</style>
+
+<div class="app">
+
+  <div class="header">
+    <div class="header-left">
+      <div class="header-logo">
+        <svg viewBox="0 0 24 24"><path d="M12 3L3 8v8l9 5 9-5V8L12 3zm0 2.3L19 9v6l-7 3.9L5 15V9l7-3.7z"/></svg>
+      </div>
+      <div class="header-title-block">
+        <div class="header-title">중앙대학교 교수 업적 관리 시스템</div>
+        <div class="header-sub">논문 정보 포맷 변환 도우미</div>
+      </div>
+    </div>
+    <button class="btn-new-chat">
+      <svg viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+      새 대화
+    </button>
+  </div>
+
+  <div class="chat-area">
+
+    <div class="divider">오늘 오후 3:15</div>
+
+    <div class="msg-row">
+      <div class="avatar bot">
+        <svg viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+      </div>
+      <div class="bubble">
+        <div class="bubble-inner">
+          <div class="msg-text">
+            <p>안녕하세요! 중앙대학교 교수 업적 관리 도우미입니다. 👋</p>
+            <p style="margin-top:8px;">논문 PDF 파일을 첨부하거나, 논문 정보를 자유롭게 텍스트로 입력해 주시면 업적 관리 시스템 양식에 맞게 정리해 드립니다.</p>
+          </div>
+        </div>
+        <div class="bubble-time">오후 3:15</div>
+      </div>
+    </div>
+
+    <div class="msg-row user">
+      <div class="avatar user">교수</div>
+      <div class="bubble">
+        <div class="bubble-inner">
+          <div class="file-chip">
+            <svg viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            칭찬 분석.pdf
+          </div>
+          <div style="font-size:13px;">이 논문 업적 등록 좀 해줘요</div>
+        </div>
+        <div class="bubble-time">오후 3:16</div>
+      </div>
+    </div>
+
+    <div class="msg-row">
+      <div class="avatar bot">
+        <svg viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+      </div>
+      <div class="bubble" style="max-width: 85%;">
+        <div class="bubble-inner">
+          <div class="msg-text">
+            <p>PDF에서 논문 정보를 추출했습니다. 업적 관리 시스템 양식으로 정리해 드립니다.</p>
+          </div>
+          <table class="result-table" style="margin-top:12px;">
+            <thead>
+              <tr>
+                <th class="field-name">필드명</th>
+                <th>값</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td class="field-name">논문 구분</td><td>국제전문학술지</td></tr>
+              <tr><td class="field-name">세부 구분</td><td>SCI-E</td></tr>
+              <tr><td class="field-name">국내외 구분</td><td>국외</td></tr>
+              <tr><td class="field-name">학술지명</td><td>BMJ OPEN</td></tr>
+              <tr><td class="field-name">발행기관</td><td style="font-size:11.5px;">BMJ PUBLISHING GROUP</td></tr>
+              <tr><td class="field-name">공동연구 구분</td><td>공동-수인</td></tr>
+              <tr><td class="field-name">전체저자수</td><td>2</td></tr>
+              <tr><td class="field-name">참여구분</td><td>공동(교신)</td></tr>
+              <tr><td class="field-name">전체저자수(참여)</td><td>6</td></tr>
+              <tr><td class="field-name">연구보조원수</td><td>0</td></tr>
+              <tr><td class="field-name">논문명(원어)</td><td style="font-size:11.5px;">What do patients value? A retrospective study of compliment letters from a single institution</td></tr>
+              <tr><td class="field-name">논문명(타언어)</td><td class="missing">정보 없음</td></tr>
+              <tr><td class="field-name">시작페이지</td><td>e101505(1~</td></tr>
+              <tr><td class="field-name">끝페이지</td><td>e101505(~7)</td></tr>
+              <tr><td class="field-name">게재권/집</td><td>16</td></tr>
+              <tr><td class="field-name">발행일자</td><td>2026.03.16</td></tr>
+              <tr><td class="field-name">게재시소속</td><td>본교</td></tr>
+              <tr><td class="field-name">학술지구분</td><td>SCI Expanded</td></tr>
+              <tr><td class="field-name">사업구분</td><td>기관고유</td></tr>
+              <tr><td class="field-name">보안대상과제</td><td>해당없음</td></tr>
+            </tbody>
+          </table>
+
+          <div class="result-note">
+            ⚠️ <strong>확인 필요 항목:</strong> <span style="font-family:'Noto Sans KR',sans-serif;">논문명(타언어), ISSN, 평가코드가 PDF에서 확인되지 않았습니다. 해당 항목은 포털에서 직접 입력해 주세요.</span>
+          </div>
+
+          <button class="copy-btn" onclick="this.textContent='복사됨 ✓'">
+            <svg viewBox="0 0 24 24" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2"/><path stroke-linecap="round" stroke-linejoin="round" d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            클립보드에 복사
+          </button>
+        </div>
+        <div class="bubble-time">오후 3:16</div>
+      </div>
+    </div>
+
+    <div class="msg-row user">
+      <div class="avatar user">교수</div>
+      <div class="bubble">
+        <div class="bubble-inner">
+          <div style="font-size:13px;">ISSN은 0959-8138 이에요</div>
+        </div>
+        <div class="bubble-time">오후 3:18</div>
+      </div>
+    </div>
+
+    <div class="msg-row">
+      <div class="avatar bot">
+        <svg viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+      </div>
+      <div class="bubble">
+        <div class="bubble-inner">
+          <div class="msg-text">
+            <p>감사합니다! ISSN <strong>0959-8138</strong>을 반영했습니다. BMJ Open의 공식 ISSN과 일치하여 확인되었습니다. ✓</p>
+            <p style="margin-top:6px;">나머지 항목(평가코드, 논문명 타언어)도 입력해 주시겠어요?</p>
+          </div>
+        </div>
+        <div class="bubble-time">오후 3:18</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="input-area">
+    <div class="input-toolbar">
+      <button class="attach-btn" title="파일 첨부">
+        <svg viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+      </button>
+      <textarea class="input-field" placeholder="논문 파일을 첨부하거나 정보를 입력하세요" rows="1"></textarea>
+      <button class="send-btn">
+        <svg viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+    <div class="input-hint">PDF · 이미지 · 텍스트 입력 모두 지원합니다</div>
+  </div>
+
+</div>

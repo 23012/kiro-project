@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "CAU 업적 자동입력",
+  "version": "1.0.0",
+  "description": "중앙대학교 교수 업적 관리 포털 자동 입력 도우미",
+  "permissions": ["activeTab", "scripting"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://cautis.cau.ac.kr/*", "*://cportal.cau.ac.kr/*"],
+      "js": ["content.js"]
+    }
+  ]
+}

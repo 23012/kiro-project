@@ -1,39 +1,88 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 function ChatInput({ onSend, isLoading }) {
   const [text, setText] = useState('');
+  const [file, setFile] = useState(null);
+  const fileInputRef = useRef(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (text.trim() && !isLoading) {
-      onSend(text);
+    if ((text.trim() || file) && !isLoading) {
+      onSend(text, file);
       setText('');
+      setFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
   const handleKeyDown = (e) => {
-    // Shift+Enter는 줄바꿈, Enter만 누르면 전송
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSubmit(e);
     }
   };
 
+  const handleFileChange = (e) => {
+    const selected = e.target.files[0];
+    if (selected) {
+      setFile(selected);
+    }
+  };
+
+  const removeFile = () => {
+    setFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
   return (
-    <form className="chat-input" onSubmit={handleSubmit}>
-      <textarea
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder="논문 정보를 입력하세요... (Shift+Enter로 줄바꿈)"
-        disabled={isLoading}
-        rows={3}
-        aria-label="논문 정보 입력"
-      />
-      <button type="submit" disabled={isLoading || !text.trim()} aria-label="메시지 전송">
-        {isLoading ? '⏳' : '📤'} 전송
-      </button>
-    </form>
+    <div className="chat-input-wrapper">
+      {file && (
+        <div className="file-preview">
+          <span className="file-preview-name">📎 {file.name}</span>
+          <button
+            className="file-remove-btn"
+            onClick={removeFile}
+            aria-label="첨부파일 제거"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+      <form className="chat-input" onSubmit={handleSubmit}>
+        <button
+          type="button"
+          className="attach-btn"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={isLoading}
+          aria-label="파일 첨부"
+        >
+          📎
+        </button>
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept=".pdf,.png,.jpg,.jpeg,.gif,.webp"
+          hidden
+        />
+        <textarea
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="논문 파일을 첨부하거나 정보를 입력하세요"
+          disabled={isLoading}
+          rows={1}
+          aria-label="논문 정보 입력"
+        />
+        <button
+          type="submit"
+          disabled={isLoading || (!text.trim() && !file)}
+          aria-label="메시지 전송"
+        >
+          {isLoading} 전송
+        </button>
+      </form>
+    </div>
   );
 }
 
