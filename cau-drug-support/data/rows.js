@@ -1,0 +1,11 @@
+const rows = [
+  {"id":"ibuprofen","name":"이부프로펜","gen":"Ibuprofen","dose":"400mg TID","date":"2026.03.20","days":30,"flag":"d","ftxt":"금기"},
+  {"id":"warfarin","name":"와파린","gen":"Warfarin sodium","dose":"5mg QD","date":"2026.01.05","days":90,"flag":"w","ftxt":"주의 2"},
+  {"id":"aspirin","name":"아스피린","gen":"Aspirin","dose":"100mg QD","date":"2026.01.05","days":180,"flag":"d","ftxt":"금기"},
+  {"id":"clopidogrel","name":"클로피도그렐","gen":"Clopidogrel","dose":"75mg QD","date":"2026.01.05","days":90,"flag":"w","ftxt":"주의"},
+  {"id":"amlodipine","name":"암로디핀","gen":"Amlodipine","dose":"10mg QD","date":"2025.12.10","days":365,"flag":null},
+  {"id":"lisinopril","name":"리시노프릴","gen":"Lisinopril","dose":"10mg QD","date":"2025.12.10","days":365,"flag":null},
+  {"id":"glimepiride","name":"글리메피리드","gen":"Glimepiride","dose":"4mg QD","date":"2025.10.02","days":180,"flag":"w","ftxt":"주의"},
+  {"id":"metformin","name":"메트포르민","gen":"Metformin HCl","dose":"1000mg BID","date":"2025.10.02","days":365,"flag":null},
+  {"id":"omeprazole","name":"오메프라졸","gen":"Omeprazole","dose":"20mg QD","date":"2025.09.15","days":365,"flag":null}
+];

@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DUR 의약품안전사용서비스 — 처방 이력</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:15px;background:#fff;color:#1a1a1a}
+.wrap{background:#fff;overflow:hidden;min-height:100vh;position:relative;display:flex;flex-direction:column}
+
+/* 카우누리 상단 */
+.k-top{background:#1a3a5c;padding:10px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.k-logo{color:#fff;font-size:15px;font-weight:600}
+.k-bread{font-size:13px;color:#7eb8d4}
+.k-nav{background:#23527a;padding:6px 20px;display:flex;gap:4px;overflow-x:auto}
+.k-tab{font-size:13px;color:#a0c8e0;padding:5px 12px;border-radius:4px;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.k-tab.on{background:#1a3a5c;color:#fff}
+
+.k-body{display:flex;flex:1;overflow:hidden}
+
+/* 환자 패널 */
+.pt-col{width:210px;background:#f7f8fa;border-right:1px solid #e5e7eb;padding:14px;flex-shrink:0;overflow-y:auto}
+.pt-lbl{font-size:11px;color:#9ca3af;letter-spacing:.4px;margin-bottom:4px;text-transform:uppercase}
+.pt-name{font-size:16px;font-weight:600;color:#1a1a1a}
+.pt-sub{font-size:13px;color:#6b7280;margin-bottom:12px}
+.dx-row{font-size:13px;color:#6b7280;padding:4px 0;border-bottom:1px solid #e5e7eb}
+.alg{margin-top:12px;background:#FCEBEB;border:1px solid #F7C1C1;border-radius:6px;padding:8px 10px}
+.alg-t{font-size:11px;color:#A32D2D;font-weight:600;margin-bottom:3px}
+.alg-v{font-size:13px;color:#501313}
+
+/* DUR 목록 */
+.dur-col{flex:1;padding:14px 18px;overflow:auto}
+.dur-head{font-size:15px;font-weight:600;color:#1a1a1a;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.dur-hint{font-size:12px;color:#9ca3af;font-weight:400}
+table{width:100%;border-collapse:collapse}
+th{font-size:13px;color:#6b7280;font-weight:600;padding:7px 10px;border-bottom:1px solid #d1d5db;background:#f7f8fa;text-align:left}
+.dr{cursor:pointer;transition:background .12s}
+.dr:hover{background:#f7f8fa}
+.dr.sel{background:#E1F5EE}
+.dr td{font-size:14px;padding:8px 10px;border-bottom:1px solid #e5e7eb;color:#1a1a1a;vertical-align:middle}
+.dr .dn{font-weight:600}
+.fl{display:inline-block;font-size:11px;padding:2px 7px;border-radius:3px;margin-left:4px}
+.fl.d{background:#FCEBEB;color:#A32D2D;border:1px solid #F09595}
+.fl.w{background:#FAEEDA;color:#633806;border:1px solid #FAC775}
+</style>
+<style>
+/* 팝업 오버레이 */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:10}
+.ov.show{display:block}
+.pop{background:#fff;border-radius:12px;border:1px solid #d1d5db;width:480px;height:560px;min-width:320px;min-height:300px;display:flex;flex-direction:column;overflow:hidden;position:absolute;top:40px;right:40px;resize:both;box-shadow:0 8px 32px rgba(0,0,0,0.18)}
+
+/* 팝업 헤더 — 드래그 핸들 */
+.ph{background:#004D5B;padding:12px 16px;display:flex;justify-content:space-between;align-items:flex-start;flex-shrink:0;cursor:move;user-select:none}
+.ph-drug{color:#fff;font-size:16px;font-weight:600}
+.ph-atc{color:#94D2BD;font-size:12px;margin-top:2px}
+.ph-x{color:#94D2BD;font-size:20px;cursor:pointer;line-height:1}
+
+/* 판정 */
+.verdict{padding:10px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;border-bottom:1px solid #e5e7eb}
+.vi{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;color:#fff;flex-shrink:0}
+.vt{font-size:15px;font-weight:600}
+.vs{font-size:13px;color:#6b7280;margin-top:2px}
+
+/* 팝업 바디 */
+.pb{overflow-y:auto;flex:1}
+
+/* 섹션 공통 */
+.sec{border-bottom:1px solid #e5e7eb;padding:12px 16px}
+.sec-title{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.sec-icon{width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.sec-label{font-size:13px;font-weight:600;color:#6b7280;letter-spacing:.3px}
+
+/* ① 계통 */
+.atc-box{background:#f7f8fa;border-radius:6px;padding:10px 12px;margin-bottom:6px}
+.atc-code{font-size:14px;font-weight:600;color:#1a1a1a}
+.atc-eng{font-size:12px;color:#6b7280;margin-top:2px}
+.atc-class{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.atc-tag{font-size:11px;padding:3px 8px;border-radius:3px}
+
+/* 계통 섹션 추가 스타일 */
+.same-class-label {
+  font-size: 11px;
+  color: #6b7280;
+  margin-bottom: 5px;
+  margin-top: 8px;
+}
+
+.same-class-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  margin-bottom: 4px;
+  background: #f7f8fa;
+  border: 1px solid #e5e7eb;
+}
+
+.same-class-row.dup {
+  background: #FCEBEB;
+  border-color: #F09595;
+}
+
+.same-class-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #1D9E75;
+  flex-shrink: 0;
+}
+
+.same-class-row.dup .same-class-dot {
+  background: #E24B4A;
+}
+
+.same-class-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: #1a1a1a;
+  flex: 1;
+}
+
+.same-class-atc {
+  font-size: 10px;
+  color: #6b7280;
+}
+
+.same-class-dose {
+  font-size: 10px;
+  color: #6b7280;
+}
+
+.same-class-badge {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.same-class-badge.dup {
+  background: #F09595;
+  color: #501313;
+}
+
+.same-class-badge.ok {
+  background: #EAF3DE;
+  color: #27500A;
+}
+
+.same-class-empty {
+  font-size: 12px;
+  color: #6b7280;
+  padding: 5px 8px;
+  background: #f7f8fa;
+  border-radius: 6px;
+}
+
+/* ② 기간 */
+.tl-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.tl-label{width:70px;font-size:12px;color:#6b7280;text-align:right;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-bg{flex:1;height:18px;background:#f3f4f6;border-radius:3px;overflow:hidden;position:relative}
+.tl-fill{position:absolute;top:2px;height:14px;border-radius:2px;display:flex;align-items:center;padding:0 4px}
+.tl-txt{font-size:10px;white-space:nowrap;overflow:hidden}
+.tl-day{font-size:11px;color:#9ca3af;width:40px;text-align:right;flex-shrink:0}
+.axis{display:flex;margin-left:78px;margin-bottom:4px}
+.ax-t{flex:1;font-size:10px;color:#9ca3af;text-align:center}
+.overlap-note{font-size:12px;padding:6px 10px;border-radius:5px;margin-top:6px;display:flex;align-items:flex-start;gap:6px;line-height:1.5}
+
+/* ③ 용량 */
+.dose-block{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+.dose-nm{font-size:14px;font-weight:600;color:#1a1a1a;width:110px;flex-shrink:0}
+.dose-bg{flex:1;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden;min-width:60px}
+.dose-fill{height:100%;border-radius:4px}
+.dose-val{font-size:12px;color:#6b7280;width:100px;text-align:right;flex-shrink:0}
+.dose-note{font-size:12px;color:#6b7280;background:#f7f8fa;border-radius:4px;padding:6px 10px;margin-top:4px;line-height:1.5}
+
+/* ④ 상호작용 + 다제약물 */
+.ddi-card{border-radius:8px;border:1px solid;padding:8px 10px;margin-bottom:8px}
+.ddi-card.lv0{background:#FCEBEB;border-color:#F09595}
+.ddi-card.lv1{background:#FAEEDA;border-color:#FAC775}
+.ddi-card.lv2{background:#E6F1FB;border-color:#B5D4F4}
+.ddi-top{display:flex;align-items:center;gap:7px;margin-bottom:4px;flex-wrap:wrap}
+.lv-chip{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;flex-shrink:0}
+.lv0 .lv-chip{background:#E24B4A;color:#fff}
+.lv1 .lv-chip{background:#EF9F27;color:#412402}
+.lv2 .lv-chip{background:#378ADD;color:#fff}
+.ddi-with{font-size:14px;font-weight:600;color:#1a1a1a}
+.ddi-type{font-size:11px;color:#6b7280;margin-left:auto;flex-shrink:0}
+.ddi-mech{font-size:12px;color:#6b7280;line-height:1.6;margin-bottom:4px}
+.ddi-act{font-size:12px;padding:4px 8px;border-radius:4px;background:rgba(0,0,0,0.05);color:#1a1a1a;line-height:1.6}
+.poly-box{background:#F1EFE8;border:1px solid #B4B2A9;border-radius:8px;padding:8px 12px}
+.poly-t{font-size:13px;font-weight:600;color:#2C2C2A;margin-bottom:5px}
+.poly-item{font-size:12px;color:#5F5E5A;padding:3px 0;display:flex;align-items:flex-start;gap:6px;line-height:1.5}
+.poly-dot{width:5px;height:5px;border-radius:50%;background:#888780;flex-shrink:0;margin-top:6px}
+
+/* 팝업 푸터 */
+.pf{padding:10px 16px;background:#f7f8fa;border-top:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;flex-wrap:wrap;gap:8px}
+.pf-note{font-size:12px;color:#6b7280}
+.pf-btn{font-size:13px;padding:6px 14px;border-radius:6px;border:1px solid #004D5B;background:#004D5B;color:#fff;cursor:pointer}
+
+/* 반응형 */
+@media(max-width:900px){
+  .k-body{flex-direction:column}
+  .pt-col{width:100%;border-right:none;border-bottom:1px solid #e5e7eb;padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline}
+  .pt-col .pt-lbl:first-child,.pt-col .dx-row,.pt-col .alg{width:100%}
+  .pt-sub{margin-bottom:0}
+  .dur-col{padding:12px 16px}
+  .ov{justify-content:center;align-items:center}
+  .pop{width:95%;max-width:520px}
+}
+@media(max-width:600px){
+  .k-top{padding:8px 12px}
+  .k-nav{padding:5px 12px}
+  .dur-col{padding:10px 10px}
+  th,td{font-size:12px;padding:6px 6px}
+  .pop{width:100%;max-width:100%;border-radius:0;max-height:100vh}
+  .ov{padding:0}
+  .ph{padding:10px 12px}
+  .sec{padding:10px 12px}
+  .pf{padding:8px 12px}
+  .tl-label{width:55px;font-size:10px}
+  .axis{margin-left:63px}
+  .dose-nm{width:80px;font-size:12px}
+  .dose-val{width:80px;font-size:11px}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="k-top">
+    <div class="k-logo">카우누리</div>
+    <div class="k-bread">처방 › DUR 의약품안전사용서비스 › 처방 이력</div>
+  </div>
+  <div class="k-nav">
+    <div class="k-tab">처방 입력</div>
+    <div class="k-tab on">DUR</div>
+    <div class="k-tab">투약 이력</div>
+    <div class="k-tab">검사 결과</div>
+  </div>
+
+  <div class="k-body">
+    <div class="pt-col">
+      <div class="pt-lbl">현재 환자</div>
+      <div class="pt-name">홍길동</div>
+      <div class="pt-sub">남 · 72세 · 등록 2309-4471</div>
+      <div class="pt-lbl">진단명</div>
+      <div class="dx-row">I48 심방세동</div>
+      <div class="dx-row">I10 본태성 고혈압</div>
+      <div class="dx-row">E11 제2형 당뇨병</div>
+      <div class="dx-row">K21 위식도역류</div>
+      <div class="dx-row">M81 골다공증</div>
+      <div class="alg">
+        <div class="alg-t">알레르기</div>
+        <div class="alg-v">페니실린 (발진)</div>
+      </div>
+    </div>
+
+    <div class="dur-col">
+      <div class="dur-head">DUR 처방 이력 <span class="dur-hint">약품명 클릭 시 상세 분석</span></div>
+      <table>
+        <thead><tr><th>약품명</th><th>용량/용법</th><th>처방일</th><th>처방기간</th><th>상태</th></tr></thead>
+        <tbody id="tb"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="ov" id="ov">
+    <div class="pop" id="pop"></div>
+  </div>
+</div>
+
+<script src="data/rows.js"></script>
+<script src="data/drug-details.js"></script>
+<script>
+(function init() {
+const tb=document.getElementById('tb');
+rows.forEach(r=>{
+  const tr=document.createElement('tr');
+  tr.className='dr';tr.id='r-'+r.id;
+  const fl=r.flag?`<span class="fl ${r.flag}">${r.ftxt}</span>`:`<span style="font-size:12px;color:#9ca3af">이상 없음</span>`;
+  tr.innerHTML=`<td><span class="dn">${r.name}</span><br><span style="font-size:11px;color:#9ca3af">${r.gen}</span></td><td style="font-size:13px">${r.dose}</td><td style="font-size:13px;color:#6b7280">${r.date}</td><td style="font-size:13px;color:#6b7280">${r.days}일</td><td>${fl}</td>`;
+  tr.onclick=()=>open(r.id,r.name,r.dose);
+  tb.appendChild(tr);
+});
+
+function open(id,name,dose){
+  document.querySelectorAll('.dr').forEach(r=>r.classList.remove('sel'));
+  document.getElementById('r-'+id).classList.add('sel');
+  const d=data[id];if(!d)return;
+  const vi=d.verdict==='금기'?'✕':d.verdict==='주의'?'!':'✓';
+
+  const axisHtml=`<div class="axis"><div class="ax-t">12개월 전</div><div class="ax-t">6개월 전</div><div class="ax-t">현재</div></div>`;
+  const tlHtml=d.timelineDrugs.map(t=>{
+    const w=t.end-t.start;
+    const txtColor=t.color==='#EF9F27'?'#412402':'#fff';
+    return `<div class="tl-row">
+      <div class="tl-label">${t.name.length>6?t.name.substring(0,6)+'..':t.name}</div>
+      <div class="tl-bg"><div class="tl-fill" style="left:${t.start}%;width:${w}%;background:${t.color}">
+        <span class="tl-txt" style="color:${txtColor}">${w>=10?t.days+'일':''}</span>
+      </div></div>
+      <div class="tl-day">${t.days}일</div>
+    </div>`;
+  }).join('');
+  const olBg=d.overlapLv==='d'?'#FCEBEB':d.overlapLv==='w'?'#FAEEDA':'#f7f8fa';
+  const olBd=d.overlapLv==='d'?'#F09595':d.overlapLv==='w'?'#FAC775':'#e5e7eb';
+  const olTc=d.overlapLv==='d'?'#501313':d.overlapLv==='w'?'#412402':'#6b7280';
+  const olHtml=`<div class="overlap-note" style="background:${olBg};border:1px solid ${olBd};color:${olTc}">${d.overlapNote}</div>`;
+
+  const doseColor=d.dose.pct>=100?'#E24B4A':d.dose.pct>=75?'#EF9F27':'#1D9E75';
+
+  const ddiHtml=d.ddis.length?d.ddis.map(x=>`
+    <div class="ddi-card ${x.lv}">
+      <div class="ddi-top"><span class="lv-chip">${x.chip}</span><span class="ddi-with">${x.with}</span><span class="ddi-type">${x.type}</span></div>
+      <div class="ddi-mech">${x.mech}</div>
+      <div class="ddi-act">${x.act}</div>
+    </div>`).join(''):`<div style="font-size:13px;color:#6b7280;padding:6px 0">현재 처방 약물과 유의한 상호작용 없음</div>`;
+
+  const polyHtml=`<div class="poly-box">
+    <div class="poly-t">${d.poly.title}</div>
+    ${d.poly.items.map(i=>`<div class="poly-item"><div class="poly-dot"></div><span>${i}</span></div>`).join('')}
+  </div>`;
+
+  const tagHtml=d.atcTags.map(t=>`<span class="atc-tag" style="background:${t.c};color:${t.tc};border:1px solid ${t.tc}40">${t.t}</span>`).join('');
+
+  document.getElementById('pop').innerHTML=`
+    <div class="ph">
+      <div><div class="ph-drug">${name} · ${dose}</div><div class="ph-atc">${d.atcCode} · ${d.atcName}</div></div>
+      <div class="ph-x" onclick="closeP()">✕</div>
+    </div>
+    <div class="verdict" style="background:${d.vbg}">
+      <div class="vi" style="background:${d.vc}">${vi}</div>
+      <div><div class="vt" style="color:${d.vc}">${d.verdict}</div><div class="vs">${d.vmsg}</div></div>
+    </div>
+    <div class="pb">
+      <div class="sec">
+        <div class="sec-title">
+          <div class="sec-icon" style="background:#E6F1FB;color:#185FA5">계</div>
+          <span class="sec-label">계통 분류</span>
+        </div>
+
+        <div class="atc-box">
+          <div class="atc-code">${d.atcCode} · ${d.atcName}</div>
+          <div class="atc-eng">${d.atcGroup}</div>
+          <div class="atc-class">${tagHtml}</div>
+        </div>
+
+        <div class="same-class-label">이 환자의 동일 계통 처방</div>
+        ${d.sameClass && d.sameClass.length
+          ? d.sameClass.map(s => `
+            <div class="same-class-row ${s.dup ? 'dup' : ''}">
+              <div class="same-class-dot"></div>
+              <span class="same-class-name">${s.name}</span>
+              <span class="same-class-atc">${s.atc}</span>
+              <span class="same-class-dose">${s.dose}</span>
+              <span class="same-class-badge ${s.dup ? 'dup' : 'ok'}">
+                ${s.dup ? '중복처방' : '복용 중'}
+              </span>
+            </div>`).join('')
+          : `<div class="same-class-empty">동일 계통 중복 처방 없음</div>`
+        }
+      </div>
+      <div class="sec">
+        <div class="sec-title">
+          <div class="sec-icon" style="background:#E1F5EE;color:#0F6E56">기</div>
+          <span class="sec-label">기간 · 병용 현황</span>
+        </div>
+        ${axisHtml}${tlHtml}${olHtml}
+      </div>
+      <div class="sec">
+        <div class="sec-title">
+          <div class="sec-icon" style="background:#FAEEDA;color:#854F0B">량</div>
+          <span class="sec-label">용량 분석</span>
+        </div>
+        <div class="dose-block">
+          <div class="dose-nm">${name}</div>
+          <div class="dose-bg"><div class="dose-fill" style="width:${d.dose.pct}%;background:${doseColor}"></div></div>
+          <div class="dose-val">${d.dose.cur} / ${d.dose.max} ${d.dose.unit}</div>
+        </div>
+        <div class="dose-note">${d.dose.note}</div>
+      </div>
+      <div class="sec">
+        <div class="sec-title">
+          <div class="sec-icon" style="background:#FCEBEB;color:#A32D2D">상</div>
+          <span class="sec-label">약물 상호작용</span>
+        </div>
+        ${ddiHtml}
+      </div>
+      <div class="sec">
+        <div class="sec-title">
+          <div class="sec-icon" style="background:#F1EFE8;color:#5F5E5A">다</div>
+          <span class="sec-label">다제약물 주의사항</span>
+        </div>
+        ${polyHtml}
+      </div>
+    </div>
+    <div class="pf">
+      <div class="pf-note">처방의: 김중앙 · 내과 | 2026.03.27</div>
+      <button class="pf-btn">처방 검토 메모</button>
+    </div>`;
+  document.getElementById('ov').classList.add('show');
+}
+document.getElementById('ov').addEventListener('click',e=>{if(e.target===e.currentTarget)closeP();});
+})(); // end init
+
+function closeP(){
+  document.getElementById('ov').classList.remove('show');
+  document.querySelectorAll('.dr').forEach(r=>r.classList.remove('sel'));
+}
+
+// 팝업 드래그 이동
+(function(){
+  const pop=document.getElementById('pop');
+  let dragging=false,ox=0,oy=0;
+  pop.addEventListener('mousedown',function(e){
+    // .ph 헤더 영역에서만 드래그 시작
+    if(!e.target.closest('.ph')||e.target.closest('.ph-x'))return;
+    dragging=true;
+    ox=e.clientX-pop.offsetLeft;
+    oy=e.clientY-pop.offsetTop;
+    document.body.style.userSelect='none';
+  });
+  document.addEventListener('mousemove',function(e){
+    if(!dragging)return;
+    let x=e.clientX-ox, y=e.clientY-oy;
+    // 화면 밖으로 안 나가게
+    x=Math.max(0,Math.min(x,window.innerWidth-pop.offsetWidth));
+    y=Math.max(0,Math.min(y,window.innerHeight-pop.offsetHeight));
+    pop.style.left=x+'px';
+    pop.style.top=y+'px';
+    pop.style.right='auto';
+  });
+  document.addEventListener('mouseup',function(){
+    dragging=false;
+    document.body.style.userSelect='';
+  });
+})();
+</script>
+
+</body>
+</html>

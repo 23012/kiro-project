@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import Sidebar from './components/Sidebar.jsx';
 import ChatWindow from './components/ChatWindow.jsx';
 import ChatInput from './components/ChatInput.jsx';
+import { getMockResponse } from './mockResponse.js';
 import './App.css';
 
 const WELCOME_MSG = {
@@ -59,49 +60,22 @@ function App() {
     setIsLoading(true);
 
     try {
-      const formData = new FormData();
-      if (text.trim()) formData.append('message', text);
-      if (file) formData.append('file', file);
-
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await response.json();
-
-      if (response.ok) {
-        updateMessages(activeId, [
-          ...newMessages,
-          { role: 'assistant', content: data.reply },
-        ]);
-      } else {
-        updateMessages(activeId, [
-          ...newMessages,
-          { role: 'assistant', content: `오류가 발생했습니다: ${data.error}`, isError: true },
-        ]);
-      }
+      const data = await getMockResponse(text, file);
+      updateMessages(activeId, [
+        ...newMessages,
+        { role: 'assistant', content: data.reply },
+      ]);
     } catch {
       updateMessages(activeId, [
         ...newMessages,
-        {
-          role: 'assistant',
-          content: '서버에 연결할 수 없습니다. 백엔드 서버가 실행 중인지 확인해주세요.',
-          isError: true,
-        },
+        { role: 'assistant', content: '응답 생성 중 오류가 발생했습니다.', isError: true },
       ]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const newChat = async () => {
-    try {
-      await fetch('/api/reset', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
-      });
-    } catch {}
+  const newChat = () => {
     const conv = { id: Date.now(), title: '새 대화', messages: [WELCOME_MSG] };
     setConversations((prev) => [conv, ...prev]);
     setActiveId(conv.id);
