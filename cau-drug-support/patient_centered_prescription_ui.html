@@ -1,467 +1,124 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DUR 처방 이력 조회</title>
-<style>
-:root{
-  --font-sans: 'Apple SD Gothic Neo','Malgun Gothic','Segoe UI',sans-serif;
-  --color-background-primary: #ffffff;
-  --color-background-secondary: #F7F7F8;
-  --color-background-tertiary: #EEEEF0;
-  --color-text-primary: #1A1A1A;
-  --color-text-secondary: #6B6B6B;
-  --color-text-tertiary: #9A9A9A;
-  --color-border-secondary: #D4D4D8;
-  --color-border-tertiary: #E4E4E7;
-  --border-radius-lg: 10px;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
-.root{padding:14px;min-height:600px}
-
-/* ── 환자 카드 ── */
-.pt-card{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);margin-bottom:10px;overflow:hidden}
-.pt-card-top{background:#1a3a5c;padding:10px 14px;display:flex;align-items:center;justify-content:space-between}
-.pt-card-top .system{color:#7eb8d4;font-size:13px}
-.pt-badge-row{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:0.5px solid var(--color-border-tertiary);flex-wrap:wrap}
-.pt-name{font-size:20px;font-weight:700;color:var(--color-text-primary)}
-.pt-chip{font-size:13px;padding:3px 10px;border-radius:4px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)}
-.triage-chip{font-size:13px;padding:3px 10px;border-radius:4px;font-weight:500}
-.triage-2{background:#FCEBEB;border:0.5px solid #F09595;color:#A32D2D}
-
-.pt-meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-bottom:0.5px solid var(--color-border-tertiary)}
-.pt-meta-cell{padding:8px 14px;border-right:0.5px solid var(--color-border-tertiary)}
-.pt-meta-cell:last-child{border-right:none}
-.pt-meta-label{font-size:12px;color:var(--color-text-tertiary);margin-bottom:2px;letter-spacing:.3px}
-.pt-meta-value{font-size:14px;color:var(--color-text-primary);font-weight:400}
-
-/* ── 주증상 경고 배너 ── */
-.dx-banner{margin-bottom:10px;border-radius:var(--border-radius-lg);border:0.5px solid;padding:10px 14px;display:flex;align-items:flex-start;gap:10px}
-.dx-banner.lv2{background:#FAEEDA;border-color:#FAC775}
-.dx-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:500;flex-shrink:0;margin-top:1px}
-.dx-icon.lv2{background:#EF9F27;color:#fff}
-.dx-right{flex:1}
-.dx-title{font-size:15px;font-weight:700;color:#412402;margin-bottom:3px}
-.dx-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
-.dx-tag{font-size:13px;padding:3px 10px;border-radius:4px}
-.dx-tag.main{background:#EF9F27;color:#412402; font-weight:800;}
-.dx-tag.sub{background:#FAEEDA;color:#633806;border:0.5px solid #FAC775; font-weight:800;}
-.dx-note{font-size:13px;color:#633806}
-
-/* ── 과거 이력 리스트 ── */
-.section-title{font-size:14px;font-weight:700;color:var(--color-text-secondary);margin-bottom:6px;display:flex;align-items:center;gap:6px}
-.history-card{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);margin-bottom:8px;overflow:hidden}
-.history-header{padding:8px 12px;background:var(--color-background-secondary);display:flex;align-items:center;gap:8px;border-bottom:0.5px solid var(--color-border-tertiary)}
-.visit-date{font-size:14px;font-weight:700;color:var(--color-text-primary)}
-.visit-dx{font-size:13px;color:var(--color-text-secondary);flex:1}
-.visit-dept{font-size:13px;color:var(--color-text-tertiary);padding:2px 8px;border-radius:3px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary)}
-.drug-table{width:100%;border-collapse:collapse}
-.drug-table th{font-size:12px;color:var(--color-text-secondary);font-weight:500;padding:6px 10px;border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);text-align:left}
-.drug-row{cursor:pointer;transition:background .1s}
-.drug-row:hover{background:var(--color-background-secondary)}
-.drug-row.sel{background:#E1F5EE}
-.drug-row td{font-size:14px;padding:8px 10px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary);vertical-align:middle;font-weight:400}
-.drug-row:last-child td{border-bottom:none}
-.drug-nm{font-weight:400}
-.drug-gen{font-size:12px;color:var(--color-text-tertiary);display:block}
-.atc-badge{font-size:12px;padding:2px 7px;border-radius:3px;border:0.5px solid}
-.fl{font-size:12px;padding:2px 7px;border-radius:3px;border:0.5px solid}
-.fl.d{background:#FCEBEB;color:#A32D2D;border-color:#F09595}
-.fl.w{background:#FAEEDA;color:#633806;border-color:#FAC775}
-.fl.ok{background:#EAF3DE;color:#27500A;border-color:#C0DD97}
-
-/* ── 팝업 ── */
-.popup-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;align-items:flex-start;justify-content:flex-end;padding:14px}
-.popup-overlay.show{display:flex}
-.popup{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-secondary);width:460px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden}
-.ph{background:#004D5B;padding:10px 14px;display:flex;justify-content:space-between;align-items:flex-start;flex-shrink:0}
-.ph-drug{color:#fff;font-size:16px;font-weight:700}
-.ph-sub{color:#94D2BD;font-size:13px;margin-top:2px}
-.ph-x{color:#94D2BD;font-size:18px;cursor:pointer;line-height:1}
-.verdict{padding:8px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;border-bottom:0.5px solid var(--color-border-tertiary)}
-.vi{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;color:#fff;flex-shrink:0}
-.vt{font-size:14px;font-weight:700}
-.vs{font-size:13px;color:var(--color-text-secondary);margin-top:1px}
-.pb{overflow-y:auto;flex:1}
-.sec{border-bottom:0.5px solid var(--color-border-tertiary);padding:10px 14px}
-.sec-hd{display:flex;align-items:center;gap:6px;margin-bottom:7px}
-.sec-ic{width:10px;height:10px;border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.sec-lb{font-size:13px;font-weight:700;color:var(--color-text-secondary);letter-spacing:.3px}
-.atc-box{background:var(--color-background-secondary);border-radius:6px;padding:7px 10px;margin-bottom:6px}
-.atc-code{font-size:14px;font-weight:700;color:var(--color-text-primary)}
-.atc-eng{font-size:13px;color:var(--color-text-secondary);margin-top:1px}
-.atc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
-.atc-tag{font-size:12px;padding:3px 8px;border-radius:3px;border:0.5px solid}
-.sc-label{font-size:13px;color:var(--color-text-secondary);margin:6px 0 4px}
-.sc-row{display:flex;flex-direction:column;gap:4px;padding:8px 10px;border-radius:5px;margin-bottom:5px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary)}
-.sc-row.dup{background:#FCEBEB;border-color:#F09595}
-.sc-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-.sc-nm{font-size:14px;font-weight:700;color:var(--color-text-primary);flex:1}
-.sc-atc{font-size:12px;color:var(--color-text-secondary)}
-.sc-note{font-size:12px;color:var(--color-text-secondary);margin-top:0;padding-left:13px;line-height:1.5}
-.sc-badge{font-size:12px;padding:2px 7px;border-radius:3px}
-.sc-badge.dup{background:#F09595;color:#501313}
-.sc-badge.ok{background:#EAF3DE;color:#27500A}
-.tl-axis{display:flex;margin-left:72px;margin-bottom:3px}
-.tl-tick{flex:1;font-size:11px;color:var(--color-text-tertiary);text-align:center}
-.tl-row{display:flex;align-items:center;gap:7px;margin-bottom:3px}
-.tl-lbl{width:68px;font-size:12px;color:var(--color-text-secondary);text-align:right;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tl-bg{flex:1;height:18px;background:var(--color-background-secondary);border-radius:3px;overflow:hidden;position:relative}
-.tl-fill{position:absolute;top:2px;height:14px;border-radius:2px;display:flex;align-items:center;padding:0 3px}
-.tl-txt{font-size:11px;white-space:nowrap;overflow:hidden}
-.tl-day{font-size:12px;color:var(--color-text-tertiary);width:30px;text-align:right;flex-shrink:0}
-.ol-note{font-size:13px;padding:6px 10px;border-radius:5px;margin-top:4px;display:flex;align-items:flex-start;gap:5px;line-height:1.5}
-.dose-block{display:flex;align-items:center;gap:8px;margin-bottom:4px}
-.dose-nm{font-size:14px;font-weight:700;color:var(--color-text-primary);width:100px;flex-shrink:0}
-.dose-bg{flex:1;height:7px;background:var(--color-border-tertiary);border-radius:4px;overflow:hidden}
-.dose-fill{height:100%;border-radius:4px}
-.dose-val{font-size:13px;color:var(--color-text-secondary);width:110px;text-align:right;flex-shrink:0}
-.dose-note-box{font-size:13px;color:var(--color-text-secondary);background:var(--color-background-secondary);border-radius:4px;padding:5px 9px;margin-top:3px}
-.ddi-card{border-radius:7px;border:0.5px solid;padding:7px 9px;margin-bottom:5px}
-.ddi-card.lv0{background:#FCEBEB;border-color:#F09595}
-.ddi-card.lv1{background:#FAEEDA;border-color:#FAC775}
-.ddi-card.lv2{background:#E6F1FB;border-color:#B5D4F4}
-.ddi-top{display:flex;align-items:center;gap:6px;margin-bottom:3px}
-.lv-chip{font-size:12px;padding:2px 8px;border-radius:20px;font-weight:500;flex-shrink:0}
-.lv0 .lv-chip{background:#E24B4A;color:#fff}
-.lv1 .lv-chip{background:#EF9F27;color:#412402}
-.lv2 .lv-chip{background:#378ADD;color:#fff}
-.ddi-with{font-size:14px;font-weight:700;color:var(--color-text-primary)}
-.ddi-type{font-size:12px;color:var(--color-text-secondary);margin-left:auto}
-.ddi-mech{font-size:13px;color:var(--color-text-secondary);line-height:1.5;margin-bottom:2px}
-.ddi-act{font-size:13px;padding:4px 8px;border-radius:4px;background:rgba(0,0,0,0.05);color:var(--color-text-primary);line-height:1.5}
-.poly-box{background:#F1EFE8;border:0.5px solid #B4B2A9;border-radius:7px;padding:7px 10px}
-.poly-t{font-size:13px;font-weight:700;color:#2C2C2A;margin-bottom:4px}
-.poly-item{font-size:13px;color:#5F5E5A;padding:2px 0;display:flex;align-items:flex-start;gap:5px;line-height:1.4}
-.poly-dot{width:5px;height:5px;border-radius:50%;background:#888780;flex-shrink:0;margin-top:4px}
-.pf{padding:8px 14px;background:var(--color-background-secondary);border-top:0.5px solid var(--color-border-tertiary);display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
-.pf-note{font-size:13px;color:var(--color-text-secondary)}
-.pf-btn{font-size:14px;padding:6px 14px;border-radius:6px;border:0.5px solid #004D5B;background:#004D5B;color:#fff;cursor:pointer}
-.empty-sc{font-size:13px;color:var(--color-text-secondary);padding:5px 8px;background:var(--color-background-secondary);border-radius:5px}
-</style>
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <div class="root">
 
-<!-- ── 환자 카드 ── -->
-<div class="pt-card">
-  <div class="pt-card-top">
-    <span style="color:#fff;font-size:15px;font-weight:500">카우누리 EMR · 응급의학과</span>
-    <span class="system">DUR 처방 이력 조회</span>
-  </div>
-  <div class="pt-badge-row">
-    <span class="pt-name">김원태</span>
-    <span class="pt-chip">등록번호 2309-0001</span>
-    <span class="pt-chip">남 · 43세</span>
-    <span class="pt-chip">BED C2</span>
-    <span class="triage-chip triage-2">Triage Lv.2 긴급</span>
-  </div>
-  <div class="pt-meta-grid">
-    <div class="pt-meta-cell">
-      <div class="pt-meta-label">내원일시</div>
-      <div class="pt-meta-value">2026.03.20 23:40</div>
+  <!-- 환자 카드 -->
+  <div class="pt-card">
+    <div class="pt-card-top">
+      <span style="color:#fff;font-size:15px;font-weight:500">카우누리 EMR · 응급의학과</span>
+      <span class="system">DUR 처방 이력 조회</span>
     </div>
-    <div class="pt-meta-cell">
-      <div class="pt-meta-label">발병일시</div>
-      <div class="pt-meta-value">2026.03.20 23:00</div>
+    <div class="pt-profile-row">
+      <div class="pt-avatar">
+        <svg viewBox="0 0 48 48" width="60" height="60" fill="none">
+          <rect width="48" height="48" rx="8" fill="#E6F1FB"/>
+          <circle cx="24" cy="17" r="7" fill="#7EB8D4"/>
+          <path d="M12 40c0-6.627 5.373-12 12-12s12 5.373 12 12" fill="#7EB8D4"/>
+        </svg>
+      </div>
+      <div class="pt-info">
+        <span class="pt-name">김원태</span>
+        <div class="pt-chips-row">
+          <span class="pt-chip">남 · 43세</span>
+          <span class="pt-chip">등록번호 2309-0001</span>
+          <span class="pt-chip">BED C2</span>
+          <span class="triage-chip triage-2">Triage Lv.2 긴급</span>
+        </div>
+      </div>
     </div>
-    <div class="pt-meta-cell">
-      <div class="pt-meta-label">내원수단</div>
-      <div class="pt-meta-value">자동차 (자가)</div>
-    </div>
-    <div class="pt-meta-cell">
-      <div class="pt-meta-label">진료 전문의</div>
-      <div class="pt-meta-value">김찬웅</div>
+    <div class="pt-meta-grid">
+      <div class="pt-meta-cell">
+        <div class="pt-meta-label">내원일시</div>
+        <div class="pt-meta-value">2026.03.20 23:40</div>
+      </div>
+      <div class="pt-meta-cell">
+        <div class="pt-meta-label">발병일시</div>
+        <div class="pt-meta-value">2026.03.20 23:00</div>
+      </div>
+      <div class="pt-meta-cell">
+        <div class="pt-meta-label">내원수단</div>
+        <div class="pt-meta-value">자동차 (자가)</div>
+      </div>
+      <div class="pt-meta-cell">
+        <div class="pt-meta-label">진료 전문의</div>
+        <div class="pt-meta-value">김찬웅</div>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- ── 주증상 경고 배너 ── -->
-<div class="dx-banner lv2">
-  <div class="dx-icon lv2">!</div>
-  <div class="dx-right">
-    <div class="dx-title">주증상 및 진단명</div>
-    <div class="dx-tags">
-      <span class="dx-tag main">R42 · Dizziness (어지럼증)</span>
-      <span class="dx-tag sub">오심 동반 의심</span>
+  <!-- 주증상 경고 배너 -->
+  <div class="dx-banner lv2">
+    <div class="dx-icon lv2">!</div>
+    <div class="dx-right">
+      <div class="dx-title">주증상 및 진단명</div>
+      <div class="dx-tags">
+        <span class="dx-tag main">R42 · Dizziness (어지럼증)</span>
+        <span class="dx-tag sub">오심 동반 의심</span>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- ── 과거 처방 이력 ── -->
-<div class="section-title">
-  <span style="width:10px;height:10px;border-radius:3px;background:#E6F1FB;display:inline-flex;flex-shrink:0"></span>
-  과거 동일 증상 처방 이력
-</div>
-
-<!-- 내원 1 -->
-<div class="history-card">
-  <div class="history-header">
-    <span class="visit-date">2025.11.14</span>
-    <span class="visit-dx">어지럼증·오심 / R42 Dizziness</span>
-    <span class="visit-dept">응급의학과</span>
+  <!-- 과거 이력 조회 바 -->
+  <div class="history-query-bar">
+    <span class="filter-label">기간</span>
+    <select class="filter-select" id="filterPeriod" onchange="applyFilter()">
+      <option value="all">전체</option>
+      <option value="6m">최근 6개월</option>
+      <option value="1y">최근 1년</option>
+      <option value="2y">최근 2년</option>
+      <option value="3y">최근 3년</option>
+      <option value="custom">직접 입력</option>
+    </select>
+    <span id="customDateRange" style="display:none;align-items:center;gap:4px">
+      <input type="date" class="filter-date" id="filterDateFrom" value="2024-01-01" onchange="applyFilter()">
+      <span style="font-size:12px;color:var(--color-text-tertiary)">~</span>
+      <input type="date" class="filter-date" id="filterDateTo" value="2026-03-20" onchange="applyFilter()">
+    </span>
+    <span class="filter-label">진료과</span>
+    <select class="filter-select" id="filterDept" onchange="applyFilter()">
+      <option value="all">전체</option>
+      <option value="응급의학과">응급의학과</option>
+      <option value="감염내과">감염내과</option>
+      <option value="비뇨의학과">비뇨의학과</option>
+      <option value="산부인과">산부인과</option>
+      <option value="순환기내과">순환기내과</option>
+      <option value="신경과">신경과</option>
+      <option value="신경외과">신경외과</option>
+      <option value="신장내과">신장내과</option>
+      <option value="안과">안과</option>
+      <option value="외과">외과</option>
+      <option value="이비인후과">이비인후과</option>
+      <option value="정형외과">정형외과</option>
+      <option value="심장혈관흉부외과">심장혈관흉부외과</option>
+      <option value="혈액종양내과">혈액종양내과</option>
+      <option value="호흡기알레르기내과">호흡기알레르기내과</option>
+    </select>
+    <button class="history-search-btn" onclick="searchHistory()">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+      조회
+    </button>
   </div>
-  <table class="drug-table">
-    <thead><tr><th>약품명</th><th>용량/용법</th><th>처방기간</th><th>계통</th><th>상태</th></tr></thead>
-    <tbody id="tb1"></tbody>
-  </table>
-</div>
 
-<!-- 내원 2 -->
-<div class="history-card">
-  <div class="history-header">
-    <span class="visit-date">2024.07.02</span>
-    <span class="visit-dx">현훈 / H81.1 Benign paroxysmal vertigo</span>
-    <span class="visit-dept">신경과</span>
+  <!-- 과거 처방 이력 -->
+  <div id="historySection" style="display:none">
+    <div class="history-result-info" id="resultInfo"></div>
+    <div id="historyCards"></div>
   </div>
-  <table class="drug-table">
-    <thead><tr><th>약품명</th><th>용량/용법</th><th>처방기간</th><th>계통</th><th>상태</th></tr></thead>
-    <tbody id="tb2"></tbody>
-  </table>
-</div>
 
 </div>
 
-<!-- ── 팝업 ── -->
+<!-- 팝업 -->
 <div class="popup-overlay" id="ov">
   <div class="popup" id="pop"></div>
 </div>
 
-<script>
-// ── 처방 데이터 ──
-const visits = {
-  tb1: [
-    {id:'betahistine', name:'베타히스틴', gen:'Betahistine HCl', dose:'24mg BID', days:7,  atcShort:'N07CA01', atcShortName:'항현훈제', flag:'ok', ftxt:'정상'},
-    {id:'metoclopramide', name:'메토클로프라미드', gen:'Metoclopramide HCl', dose:'10mg IV PRN', days:1, atcShort:'A03FA01', atcShortName:'소화기계', flag:'w', ftxt:'주의'},
-    {id:'diazepam', name:'디아제팜', gen:'Diazepam', dose:'5mg IV once', days:1, atcShort:'N05BA01', atcShortName:'항불안제', flag:'w', ftxt:'주의'},
-  ],
-  tb2: [
-    {id:'betahistine', name:'베타히스틴', gen:'Betahistine HCl', dose:'24mg BID', days:14, atcShort:'N07CA01', atcShortName:'항현훈제', flag:'ok', ftxt:'정상'},
-    {id:'cinnarizine', name:'시나리진', gen:'Cinnarizine', dose:'25mg TID', days:14, atcShort:'N07CA02', atcShortName:'항현훈제', flag:'w', ftxt:'주의'},
-    {id:'ginkgo', name:'징코민', gen:'Ginkgo biloba extract', dose:'40mg TID', days:14, atcShort:'N06DX02', atcShortName:'기타신경계', flag:'ok', ftxt:'정상'},
-  ],
-};
-
-// ── 약물 상세 데이터 ──
-const drugData = {
-  betahistine:{
-    verdict:'정상', vc:'#0F6E56', vbg:'#E1F5EE', vmsg:'유의한 상호작용 없음 — 어지럼증 1차 선택약',
-    atcCode:'N07CA01', atcName:'항현훈제 · 히스타민 유사체', atcGroup:'N · 신경계',
-    atcTags:[{t:'내이 혈류 개선',c:'#E6F1FB',tc:'#042C53'},{t:'H1 약작용/H3 길항',c:'#EAF3DE',tc:'#173404'}],
-    sameClass:[
-      {name:'시나리진', atc:'N07CA02', dose:'25mg TID', dup:false, note:'N07CA 항현훈제 — 기전 상이(CCB계 전정억제), 병용 시 진정 상가 주의'}
-    ],
-    timelineDrugs:[
-      {name:'베타히스틴', start:0, end:100, color:'#1D9E75', days:14},
-    ],
-    overlapNote:'단독 처방 — 다른 항현훈제와 병용 없음 (적절)',
-    overlapLv: null,
-    dose:{cur:48, max:48, unit:'mg/일', pct:100, note:'허가 최대 용량(48mg/일). 표준 처방 범위 내'},
-    ddis:[],
-    poly:{title:'다제약물 참고 (이번 방문 3종)',items:['베타히스틴은 DDI 프로파일 낮음. 고령 또는 MAO억제제 복용 시 상호작용 주의','장기 복용(3개월+) 시 효과 재평가 권장']}
-  },
-  metoclopramide:{
-    verdict:'주의', vc:'#854F0B', vbg:'#FAEEDA', vmsg:'디아제팜 병용 시 중추신경 억제 상가 주의',
-    atcCode:'A03FA01', atcName:'위장관 운동 촉진제', atcGroup:'A · 소화기 및 대사계',
-    atcTags:[{t:'D2 수용체 길항 (위장관+중추)',c:'#FAEEDA',tc:'#412402'},{t:'추체외로 부작용 주의',c:'#FCEBEB',tc:'#A32D2D'}],
-    sameClass:[],
-    timelineDrugs:[
-      {name:'메토클로프라미드', start:85, end:100, color:'#EF9F27', days:1},
-      {name:'디아제팜 (병용)', start:85, end:100, color:'#E24B4A', days:1},
-    ],
-    overlapNote:'디아제팜과 동일 날 IV 투여 — 진정·호흡억제 위험 모니터링 필요',
-    overlapLv:'w',
-    dose:{cur:10, max:40, unit:'mg/일', pct:25, note:'IV 단회 10mg — 응급 투여 적정 용량. PRN 사용으로 반복 위험 낮음'},
-    ddis:[
-      {lv:'lv2', chip:'주의', with:'디아제팜 5mg IV', type:'PD', mech:'두 약 모두 중추신경 억제 효과 → 과도한 진정, 호흡억제 위험 상가. 특히 고령이 아닌 43세에서도 IV 병용 시 주의', act:'투여 후 30분간 활력징후(SpO2, RR) 모니터링. 필요 시 플루마제닐 준비'},
-    ],
-    poly:{title:'다제약물 참고 (이번 방문 3종)',items:['메토클로프라미드의 D2 차단 → 반복 투여 시 추체외로 증상(급성 근긴장이상) 위험','베타히스틴과는 상호작용 없음 — 병용 안전','응급실 단회 투여는 적절, 퇴원 후 경구 지속 처방은 재평가 필요']}
-  },
-  diazepam:{
-    verdict:'주의', vc:'#854F0B', vbg:'#FAEEDA', vmsg:'메토클로프라미드와 중추신경 억제 상가 주의',
-    atcCode:'N05BA01', atcName:'벤조디아제핀계 항불안제', atcGroup:'N · 신경계',
-    atcTags:[{t:'GABA-A 수용체 양성 조절',c:'#FAEEDA',tc:'#412402'},{t:'전정계 억제 (어지럼증 급성기)',c:'#E6F1FB',tc:'#042C53'}],
-    sameClass:[],
-    timelineDrugs:[
-      {name:'디아제팜', start:85, end:100, color:'#E24B4A', days:1},
-      {name:'메토클로프라미드 (병용)', start:85, end:100, color:'#EF9F27', days:1},
-    ],
-    overlapNote:'메토클로프라미드와 동일 날 IV 투여 — 이중 CNS억제 구간',
-    overlapLv:'w',
-    dose:{cur:5, max:10, unit:'mg 단회', pct:50, note:'급성 현훈 단회 IV 5mg — 적정. 반복 투여 시 호흡억제 주의'},
-    ddis:[
-      {lv:'lv2', chip:'주의', with:'메토클로프라미드 10mg IV', type:'PD', mech:'벤조디아제핀(GABA 증강) + D2 길항제 모두 CNS 억제 작용 → 진정 상가, 호흡억제 위험', act:'병용 투여 후 SpO2 연속 모니터링. 낙상 예방 조치 시행'},
-    ],
-    poly:{title:'다제약물 참고 (이번 방문 3종)',items:['디아제팜 단회 IV는 급성 현훈 조절에 효과적 — 지속 처방은 의존성 위험으로 비권장','알코올·다른 CNS 억제제 병용 여부 문진 필요','퇴원 후 당일 운전 금지 안내 필수']}
-  },
-  cinnarizine:{
-    verdict:'주의', vc:'#854F0B', vbg:'#FAEEDA', vmsg:'베타히스틴 병용 — 진정 효과 상가 주의',
-    atcCode:'N07CA02', atcName:'항현훈제 · 칼슘채널차단제(전정계)', atcGroup:'N · 신경계',
-    atcTags:[{t:'전정계 선택적 CCB',c:'#FAEEDA',tc:'#412402'},{t:'H1 길항 (항히스타민 작용)',c:'#E6F1FB',tc:'#042C53'}],
-    sameClass:[
-      {name:'베타히스틴', atc:'N07CA01', dose:'24mg BID', dup:false, note:'N07CA 항현훈제 — 기전 상이(히스타민계 vs CCB), 병용 시 과도한 전정억제 주의'}
-    ],
-    timelineDrugs:[
-      {name:'시나리진', start:0, end:100, color:'#EF9F27', days:14},
-      {name:'베타히스틴 (병용)', start:0, end:100, color:'#1D9E75', days:14},
-    ],
-    overlapNote:'베타히스틴과 14일 전 기간 병용 — 전정계 이중 억제, 진정 위험 구간',
-    overlapLv:'w',
-    dose:{cur:75, max:75, unit:'mg/일', pct:100, note:'최대 권장 용량. 졸음·추체외로 부작용 위험 최대'},
-    ddis:[
-      {lv:'lv2', chip:'주의', with:'베타히스틴 24mg BID', type:'PD', mech:'N07CA 동일 계통 항현훈제 병용 → 전정 억제 상가. 과도한 진정·균형 불안정 위험', act:'병용 필요성 재검토. 단독 요법 전환 권고'},
-    ],
-    poly:{title:'다제약물 참고 (2024년 방문 3종)',items:['시나리진 장기 복용(3개월 이상) 시 파킨슨 유사 증상(지연성 추체외로) 보고','항히스타민 작용으로 졸음·집중력 저하 — 운전·작업 안전 주의','베타히스틴과 기전 중복 — 단독 요법 우선 권장']}
-  },
-  ginkgo:{
-    verdict:'정상', vc:'#0F6E56', vbg:'#E1F5EE', vmsg:'유의한 DDI 없음 — 미세순환 개선 보조',
-    atcCode:'N06DX02', atcName:'혈액순환 개선제 · 징코 추출물', atcGroup:'N · 신경계',
-    atcTags:[{t:'혈소판 활성인자(PAF) 억제',c:'#E6F1FB',tc:'#042C53'},{t:'내이 미세순환 개선',c:'#EAF3DE',tc:'#173404'}],
-    sameClass:[],
-    timelineDrugs:[
-      {name:'징코민', start:0, end:100, color:'#1D9E75', days:14},
-    ],
-    overlapNote:'단독 처방 범위 — 항응고제 병용 없어 출혈 위험 낮음 (현재 방문 기준)',
-    overlapLv: null,
-    dose:{cur:120, max:240, unit:'mg/일', pct:50, note:'표준 용량(120mg/일). 효과 미흡 시 240mg까지 증량 가능'},
-    ddis:[],
-    poly:{title:'다제약물 참고 (2024년 방문 3종)',items:['항응고제(와파린 등) 병용 시 출혈 위험 — 이번 방문 병용 없어 양호','수술 전 최소 2주 중단 권고 (혈소판 응집 억제)','건강기능식품과 동일 성분 중복 복용 여부 확인 권장']}
-  },
-};
-
-// ── 테이블 렌더 ──
-function renderTable(tbId, drugs){
-  const tb = document.getElementById(tbId);
-  drugs.forEach(d => {
-    const tr = document.createElement('tr');
-    tr.className = 'drug-row';
-    tr.id = tbId+'-'+d.id;
-    const flagCls = d.flag==='d'?'fl d':d.flag==='w'?'fl w':'fl ok';
-    const atcColor = d.atcShort.startsWith('N')?'#E6F1FB':d.atcShort.startsWith('A')?'#EAF3DE':'#FAEEDA';
-    const atcTC = d.atcShort.startsWith('N')?'#042C53':d.atcShort.startsWith('A')?'#173404':'#412402';
-    tr.innerHTML = `
-      <td><span class="drug-nm">${d.name}</span><span class="drug-gen">${d.gen}</span></td>
-      <td style="font-size:13px">${d.dose}</td>
-      <td style="font-size:13px;color:var(--color-text-secondary)">${d.days}일</td>
-      <td><span class="atc-badge" style="background:${atcColor};color:${atcTC};border-color:${atcTC}40">${d.atcShort} · ${d.atcShortName}</span></td>
-      <td><span class="${flagCls}">${d.ftxt}</span></td>`;
-    tr.onclick = () => openPopup(tbId+'-'+d.id, d.name, d.dose, d.gen, d.id);
-    tb.appendChild(tr);
-  });
-}
-renderTable('tb1', visits.tb1);
-renderTable('tb2', visits.tb2);
-
-function openPopup(rowId, name, dose, gen, id){
-  document.querySelectorAll('.drug-row').forEach(r=>r.classList.remove('sel'));
-  const row = document.getElementById(rowId);
-  if(row) row.classList.add('sel');
-  const d = drugData[id]; if(!d) return;
-  const vi = d.verdict==='금기'?'✕':d.verdict==='주의'?'!':'✓';
-  const tagHtml = d.atcTags.map(t=>`<span class="atc-tag" style="background:${t.c};color:${t.tc};border-color:${t.tc}40">${t.t}</span>`).join('');
-
-  // 동일계통
-  const scHtml = d.sameClass && d.sameClass.length
-    ? d.sameClass.map(s=>`
-      <div class="sc-row ${s.dup?'dup':''}">
-        <div style="display:flex;align-items:center;gap:7px">
-          <div class="sc-dot" style="background:${s.dup?'#E24B4A':'#1D9E75'}"></div>
-          <span class="sc-nm">${s.name}</span>
-          <span class="sc-atc">${s.atc}</span>
-          <span class="sc-atc">${s.dose}</span>
-          <span class="sc-badge ${s.dup?'dup':'ok'}">${s.dup?'중복처방':'병용 중'}</span>
-        </div>
-        <div class="sc-note">${s.note}</div>
-      </div>`).join('')
-    : `<div class="empty-sc">동일 계통 중복 처방 없음</div>`;
-
-  // 기간 타임라인
-  const tlHtml = d.timelineDrugs.map(t=>{
-    const w=t.end-t.start;
-    const txtColor=t.color==='#EF9F27'?'#412402':'#fff';
-    return `<div class="tl-row">
-      <div class="tl-lbl">${t.name.length>6?t.name.slice(0,6)+'..':t.name}</div>
-      <div class="tl-bg"><div class="tl-fill" style="left:${t.start}%;width:${w}%;background:${t.color}">
-        <span class="tl-txt" style="color:${txtColor}">${w>=15?t.days+'일':''}</span>
-      </div></div>
-      <div class="tl-day">${t.days}일</div>
-    </div>`;
-  }).join('');
-  const olBg=d.overlapLv==='d'?'#FCEBEB':d.overlapLv==='w'?'#FAEEDA':'var(--color-background-secondary)';
-  const olBd=d.overlapLv==='d'?'#F09595':d.overlapLv==='w'?'#FAC775':'var(--color-border-tertiary)';
-  const olTc=d.overlapLv==='d'?'#501313':d.overlapLv==='w'?'#412402':'var(--color-text-secondary)';
-
-  // 용량
-  const dColor=d.dose.pct>=100?'#E24B4A':d.dose.pct>=75?'#EF9F27':'#1D9E75';
-
-  // DDI
-  const ddiHtml = d.ddis.length ? d.ddis.map(x=>`
-    <div class="ddi-card ${x.lv}">
-      <div class="ddi-top"><span class="lv-chip">${x.chip}</span><span class="ddi-with">${x.with}</span><span class="ddi-type">${x.type}</span></div>
-      <div class="ddi-mech">${x.mech}</div>
-      <div class="ddi-act">${x.act}</div>
-    </div>`).join('') : `<div style="font-size:14px;color:var(--color-text-secondary);padding:4px 0">현재 처방 내 유의한 상호작용 없음</div>`;
-
-  const polyHtml = `<div class="poly-box">${d.poly.items.map(i=>`<div class="poly-item"><div class="poly-dot"></div><span>${i}</span></div>`).join('')}</div>`;
-
-  document.getElementById('pop').innerHTML = `
-    <div class="ph">
-      <div><div class="ph-drug">${name} · ${dose}</div><div class="ph-sub">${gen} · ${d.atcCode}</div></div>
-      <div class="ph-x" onclick="closeP()">✕</div>
-    </div>
-    <div class="verdict" style="background:${d.vbg}">
-      <div class="vi" style="background:${d.vc}">${vi}</div>
-      <div><div class="vt" style="color:${d.vc}">${d.verdict}</div><div class="vs">${d.vmsg}</div></div>
-    </div>
-    <div class="pb">
-      <div class="sec">
-        <div class="sec-hd"><div class="sec-ic" style="background:#E6F1FB;color:#185FA5"></div><span class="sec-lb">계통 분류</span></div>
-        <div class="atc-box">
-          <div class="atc-code">${d.atcCode} · ${d.atcName}</div>
-          <div class="atc-eng">${d.atcGroup}</div>
-          <div class="atc-tags">${tagHtml}</div>
-        </div>
-        <div class="sc-label">이 처방 내 동일 계통 약물</div>
-        ${scHtml}
-      </div>
-      <div class="sec">
-        <div class="sec-hd"><div class="sec-ic" style="background:#E1F5EE;color:#0F6E56"></div><span class="sec-lb">기간 · 병용 현황</span></div>
-        <div class="tl-axis"><div class="tl-tick">처방 시작</div><div class="tl-tick"></div><div class="tl-tick">종료</div></div>
-        ${tlHtml}
-        <div class="ol-note" style="background:${olBg};border:0.5px solid ${olBd};color:${olTc}">${d.overlapNote}</div>
-      </div>
-      <div class="sec">
-        <div class="sec-hd"><div class="sec-ic" style="background:#FAEEDA;color:#854F0B"></div><span class="sec-lb">용량 분석</span></div>
-        <div class="dose-block">
-          <div class="dose-nm">${name}</div>
-          <div class="dose-bg"><div class="dose-fill" style="width:${d.dose.pct}%;background:${dColor}"></div></div>
-          <div class="dose-val">${d.dose.cur} / ${d.dose.max} ${d.dose.unit}</div>
-        </div>
-        <div class="dose-note-box">${d.dose.note}</div>
-      </div>
-      <div class="sec">
-        <div class="sec-hd"><div class="sec-ic" style="background:#FCEBEB;color:#A32D2D"></div><span class="sec-lb">약물 상호작용</span></div>
-        ${ddiHtml}
-      </div>
-      <div class="sec">
-        <div class="sec-hd"><div class="sec-ic" style="background:#F1EFE8;color:#5F5E5A"></div><span class="sec-lb">다제약물 주의사항</span></div>
-        ${polyHtml}
-      </div>
-    </div>
-    <div class="pf">
-      <div class="pf-note">처방의: 김찬웅 (응급의학과) · 2026.03.20</div>
-      <button class="pf-btn">처방 검토 메모</button>
-    </div>`;
-  document.getElementById('ov').classList.add('show');
-}
-function closeP(){
-  document.getElementById('ov').classList.remove('show');
-  document.querySelectorAll('.drug-row').forEach(r=>r.classList.remove('sel'));
-}
-document.getElementById('ov').addEventListener('click', e=>{if(e.target===e.currentTarget)closeP();});
-</script>
+<script src="js/app.js"></script>
 </body>
 </html>
