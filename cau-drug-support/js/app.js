@@ -41,7 +41,7 @@ const drugData = {
     poly:{items:['베타히스틴은 DDI 프로파일 낮음. 고령 또는 MAO억제제 복용 시 상호작용 주의','장기 복용(3개월+) 시 효과 재평가 권장']}
   },
   metoclopramide:{
-    verdict:'주의', vc:'#854F0B', vbg:'#FAEEDA', vmsg:'디아제팜 병용 시 중추신경 억제 상가 주의',
+    vc:'#854F0B', vbg:'#FAEEDA', vmsg:'디아제팜 병용 시 중추신경 억제 상가 주의',
     atcCode:'A03FA01', atcName:'위장관 운동 촉진제', atcGroup:'A · 소화기 및 대사계',
     atcTags:[{t:'D2 수용체 길항 (위장관+중추)',c:'#FAEEDA',tc:'#412402'},{t:'추체외로 부작용 주의',c:'#FCEBEB',tc:'#A32D2D'}],
     sameClass:[],
@@ -103,15 +103,10 @@ function renderTable(tbId, drugs) {
       '<td style="font-size:13px;color:var(--color-text-secondary)">'+d.days+'일</td>'+
       '<td><span class="atc-badge" style="background:'+atcColor+';color:'+atcTC+';border-color:'+atcTC+'40">'+d.atcShort+' · '+d.atcShortName+'</span></td>'+
       '<td><span class="'+flagCls+'">'+d.ftxt+'</span></td>';
-    tr.onclick = (function(rid, nm, ds, gn, did) {
-      return function() { openPopup(rid, nm, ds, gn, did); };
-    })(tr.id, d.name, d.dose, d.gen, d.id);
+    tr.onclick = null;
     tb.appendChild(tr);
   });
 }
-
-// ── 초기 렌더 ──
-// (당일 처방 내역 제거됨)
 
 // ── 과거 이력 조회 ──
 var historyVisible = false;
@@ -151,7 +146,7 @@ function applyFilter() {
   container.innerHTML = '';
 
   if (filtered.length === 0) {
-    container.innerHTML = '<div style="padding:15px;font-size:15px;color:var(--color-text-secondary);background:var(--color-background-primary);border-radius:10px;border:0.5px solid var(--color-border-tertiary);text-align:center">조건에 맞는 과거 처방 이력이 없습니다</div>';
+    container.innerHTML = '<div style="padding:15px;font-size:16px;color:var(--color-text-secondary);background:var(--color-background-primary);border-radius:10px;border:0.5px solid var(--color-border-tertiary);text-align:center">조건에 맞는 과거 처방 이력이 없습니다</div>';
     document.getElementById('resultInfo').textContent = '0건';
     return;
   }
@@ -175,114 +170,82 @@ function applyFilter() {
       '</table>';
     container.appendChild(card);
     renderTable(tbId, v.drugs);
+
+    // 해당 내원의 주의사항을 카드 안에 추가
+    var warnings = buildWarnings(v.drugs);
+    if (warnings) {
+      var toggleId = 'warn' + i;
+      var warnDiv = document.createElement('div');
+      warnDiv.className = 'card-warn-section';
+      warnDiv.innerHTML =
+        '<div class="card-warn-header" onclick="togglePanel(\''+toggleId+'\')">'+
+          '<span class="card-warn-title">주의사항</span>'+
+          '<span class="toggle-arrow" id="'+toggleId+'-arrow">▼</span>'+
+        '</div>'+
+        '<div class="toggle-body" id="'+toggleId+'-body" style="display:none">'+warnings+'</div>';
+      card.appendChild(warnDiv);
+    }
   });
 }
 
-// ── 팝업 ──
-function openPopup(rowId, name, dose, gen, id) {
-  document.querySelectorAll('.drug-row').forEach(function(r){ r.classList.remove('sel'); });
-  var row = document.getElementById(rowId);
-  if (row) row.classList.add('sel');
-  var d = drugData[id];
-  if (!d) return;
+function buildWarnings(drugs) {
+  var ddiHtml = '';
+  var polyHtml = '';
+  var seenDdi = {};
+  var seenPoly = {};
 
-  var vi = d.verdict==='금기'?'✕':d.verdict==='주의'?'!':'✓';
-  var tagHtml = d.atcTags.map(function(t){ return '<span class="atc-tag" style="background:'+t.c+';color:'+t.tc+';border-color:'+t.tc+'40">'+t.t+'</span>'; }).join('');
+  drugs.forEach(function(d) {
+    var data = drugData[d.id];
+    if (!data) return;
 
-  var scHtml = d.sameClass && d.sameClass.length
-    ? d.sameClass.map(function(s){
-        return '<div class="sc-row '+(s.dup?'dup':'')+'">'+
-          '<div style="display:flex;align-items:center;gap:7px">'+
-            '<div class="sc-dot" style="background:'+(s.dup?'#E24B4A':'#1D9E75')+'"></div>'+
-            '<span class="sc-nm">'+s.name+'</span>'+
-            '<span class="sc-atc">'+s.atc+'</span>'+
-            '<span class="sc-atc">'+s.dose+'</span>'+
-            '<span class="sc-badge '+(s.dup?'dup':'ok')+'">'+(s.dup?'중복처방':'병용 중')+'</span>'+
-          '</div>'+
-          '<div class="sc-note">'+s.note+'</div>'+
+    if (data.ddis && data.ddis.length && !seenDdi[d.id]) {
+      seenDdi[d.id] = true;
+      data.ddis.forEach(function(x) {
+        ddiHtml +=
+          '<div class="ddi-card '+x.lv+'">'+
+            '<div class="ddi-top">'+
+              '<span class="ddi-with">'+d.name+' ↔ '+x.with+'</span>'+
+              '<span class="ddi-type">'+x.type+'</span>'+
+            '</div>'+
+            '<div class="ddi-mech">'+x.mech+'</div>'+
+            '<div class="ddi-act">'+x.act+'</div>'+
+          '</div>';
+      });
+    }
+
+    if (data.poly && data.poly.items && data.poly.items.length && !seenPoly[d.id]) {
+      seenPoly[d.id] = true;
+      polyHtml +=
+        '<div class="poly-box" style="margin-bottom:6px">'+
+          '<div style="font-size:13px;font-weight:600;color:var(--color-text-primary);margin-bottom:4px">'+d.name+'</div>'+
+          data.poly.items.map(function(txt) {
+            return '<div class="poly-item"><div class="poly-dot"></div><span>'+txt+'</span></div>';
+          }).join('')+
         '</div>';
-      }).join('')
-    : '<div class="empty-sc">동일 계통 중복 처방 없음</div>';
+    }
+  });
 
-  var tlHtml = d.timelineDrugs.map(function(t){
-    var w = t.end - t.start;
-    var txtColor = t.color==='#EF9F27'?'#412402':'#fff';
-    return '<div class="tl-row">'+
-      '<div class="tl-lbl">'+(t.name.length>6?t.name.slice(0,6)+'..':t.name)+'</div>'+
-      '<div class="tl-bg"><div class="tl-fill" style="left:'+t.start+'%;width:'+w+'%;background:'+t.color+'">'+
-        '<span class="tl-txt" style="color:'+txtColor+'">'+(w>=15?t.days+'일':'')+'</span>'+
-      '</div></div>'+
-      '<div class="tl-day">'+t.days+'일</div>'+
-    '</div>';
-  }).join('');
+  if (!ddiHtml && !polyHtml) return null;
 
-  var olBg = d.overlapLv==='d'?'#FCEBEB':d.overlapLv==='w'?'#FAEEDA':'var(--color-background-secondary)';
-  var olBd = d.overlapLv==='d'?'#F09595':d.overlapLv==='w'?'#FAC775':'var(--color-border-tertiary)';
-  var olTc = d.overlapLv==='d'?'#501313':d.overlapLv==='w'?'#412402':'var(--color-text-secondary)';
-  var dColor = d.dose.pct>=100?'#E24B4A':d.dose.pct>=75?'#EF9F27':'#1D9E75';
-
-  var ddiHtml = d.ddis.length
-    ? d.ddis.map(function(x){
-        return '<div class="ddi-card '+x.lv+'">'+
-          '<div class="ddi-top"><span class="lv-chip">'+x.chip+'</span><span class="ddi-with">'+x.with+'</span><span class="ddi-type">'+x.type+'</span></div>'+
-          '<div class="ddi-mech">'+x.mech+'</div>'+
-          '<div class="ddi-act">'+x.act+'</div>'+
-        '</div>';
-      }).join('')
-    : '<div style="font-size:14px;color:var(--color-text-secondary);padding:4px 0">현재 처방 내 유의한 상호작용 없음</div>';
-
-  var polyHtml = '<div class="poly-box">'+d.poly.items.map(function(item){
-    return '<div class="poly-item"><div class="poly-dot"></div><span>'+item+'</span></div>';
-  }).join('')+'</div>';
-
-  document.getElementById('pop').innerHTML =
-    '<div class="ph">'+
-      '<div><div class="ph-drug">'+name+' · '+dose+'</div><div class="ph-sub">'+gen+' · '+d.atcCode+'</div></div>'+
-      '<div class="ph-x" onclick="closeP()">✕</div>'+
-    '</div>'+
-    '<div class="verdict" style="background:'+d.vbg+'">'+
-      '<div class="vi" style="background:'+d.vc+'">'+vi+'</div>'+
-      '<div><div class="vt" style="color:'+d.vc+'">'+d.verdict+'</div><div class="vs">'+d.vmsg+'</div></div>'+
-    '</div>'+
-    '<div class="pb">'+
-      '<div class="sec">'+
-        '<div class="sec-hd"><div class="sec-ic" style="background:#E6F1FB"></div><span class="sec-lb">계통 분류</span></div>'+
-        '<div class="atc-box"><div class="atc-code">'+d.atcCode+' · '+d.atcName+'</div><div class="atc-eng">'+d.atcGroup+'</div><div class="atc-tags">'+tagHtml+'</div></div>'+
-        '<div class="sc-label">이 처방 내 동일 계통 약물</div>'+scHtml+
-      '</div>'+
-      '<div class="sec">'+
-        '<div class="sec-hd"><div class="sec-ic" style="background:#E1F5EE"></div><span class="sec-lb">기간 · 병용 현황</span></div>'+
-        '<div class="tl-axis"><div class="tl-tick">처방 시작</div><div class="tl-tick"></div><div class="tl-tick">종료</div></div>'+
-        tlHtml+
-        '<div class="ol-note" style="background:'+olBg+';border:0.5px solid '+olBd+';color:'+olTc+'">'+d.overlapNote+'</div>'+
-      '</div>'+
-      '<div class="sec">'+
-        '<div class="sec-hd"><div class="sec-ic" style="background:#FAEEDA"></div><span class="sec-lb">용량 분석</span></div>'+
-        '<div class="dose-block"><div class="dose-nm">'+name+'</div><div class="dose-bg"><div class="dose-fill" style="width:'+d.dose.pct+'%;background:'+dColor+'"></div></div><div class="dose-val">'+d.dose.cur+' / '+d.dose.max+' '+d.dose.unit+'</div></div>'+
-        '<div class="dose-note-box">'+d.dose.note+'</div>'+
-      '</div>'+
-      '<div class="sec">'+
-        '<div class="sec-hd"><div class="sec-ic" style="background:#FCEBEB"></div><span class="sec-lb">약물 상호작용</span></div>'+
-        ddiHtml+
-      '</div>'+
-      '<div class="sec">'+
-        '<div class="sec-hd"><div class="sec-ic" style="background:#F1EFE8"></div><span class="sec-lb">다제약물 주의사항</span></div>'+
-        polyHtml+
-      '</div>'+
-    '</div>'+
-    '<div class="pf">'+
-      '<div class="pf-note">처방의: 김찬웅 (응급의학과) · 2026.03.20</div>'+
-      '<button class="pf-btn">처방 검토 메모</button>'+
-    '</div>';
-
-  document.getElementById('ov').classList.add('show');
+  var html = '';
+  if (ddiHtml) {
+    html += '<div style="margin-bottom:8px"><div class="warn-sub-title">약물 상호작용</div>' + ddiHtml + '</div>';
+  }
+  if (polyHtml) {
+    html += '<div><div class="warn-sub-title">다제약물 주의사항</div>' + polyHtml + '</div>';
+  }
+  return html;
 }
 
-function closeP() {
-  document.getElementById('ov').classList.remove('show');
-  document.querySelectorAll('.drug-row').forEach(function(r){ r.classList.remove('sel'); });
+// ── 토글 패널 ──
+function togglePanel(sectionId) {
+  var body = document.getElementById(sectionId + '-body');
+  var arrow = document.getElementById(sectionId + '-arrow');
+  if (body.style.display === 'none') {
+    body.style.display = 'block';
+    arrow.classList.add('open');
+  } else {
+    body.style.display = 'none';
+    arrow.classList.remove('open');
+  }
 }
-
-document.getElementById('ov').addEventListener('click', function(e) {
-  if (e.target === e.currentTarget) closeP();
-});

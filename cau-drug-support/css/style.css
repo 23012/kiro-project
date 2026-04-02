@@ -6,7 +6,6 @@
   --color-text-primary: #1A1A1A;
   --color-text-secondary: #6B6B6B;
   --color-text-tertiary: #9A9A9A;
-  --color-border-secondary: #D4D4D8;
   --color-border-tertiary: #E4E4E7;
   --border-radius-lg: 10px;
 }
@@ -28,11 +27,11 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 .pt-chip{font-size:13px;padding:4px 12px;border-radius:6px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary);font-weight:500;line-height:1.3}
 .triage-chip{font-size:13px;padding:4px 12px;border-radius:6px;font-weight:600;line-height:1.3}
 .triage-2{background:#FCEBEB;border:0.5px solid #F09595;color:#A32D2D}
-.pt-meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-bottom:0.5px solid var(--color-border-tertiary)}
-.pt-meta-cell{padding:8px 14px;border-right:0.5px solid var(--color-border-tertiary)}
+.pt-meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+.pt-meta-cell{padding:12px 14px;border-right:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary)}
 .pt-meta-cell:last-child{border-right:none}
-.pt-meta-label{font-size:12px;color:var(--color-text-tertiary);margin-bottom:2px;letter-spacing:.3px}
-.pt-meta-value{font-size:14px;color:var(--color-text-primary);font-weight:400}
+.pt-meta-label{font-size:11px;color:var(--color-text-tertiary);margin-bottom:4px;letter-spacing:.3px;text-transform:uppercase}
+.pt-meta-value{font-size:14px;color:var(--color-text-primary);font-weight:500;line-height:1.4}
 
 /* ── 주증상 경고 배너 ── */
 .dx-banner{margin-bottom:10px;border-radius:var(--border-radius-lg);border:0.5px solid;padding:10px 14px;display:flex;align-items:flex-start;gap:10px}
@@ -41,99 +40,59 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 .dx-icon.lv2{background:#EF9F27;color:#fff}
 .dx-right{flex:1}
 .dx-title{font-size:15px;font-weight:700;color:#412402;margin-bottom:3px}
-.dx-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+.dx-tags{display:flex;gap:6px;flex-wrap:wrap}
 .dx-tag{font-size:13px;padding:3px 10px;border-radius:4px}
 .dx-tag.main{background:#EF9F27;color:#412402;font-weight:800}
 .dx-tag.sub{background:#FAEEDA;color:#633806;border:0.5px solid #FAC775;font-weight:800}
-.dx-note{font-size:13px;color:#633806}
 
-/* ── 섹션 타이틀 ── */
-.section-title{font-size:14px;font-weight:700;color:var(--color-text-secondary);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+/* ── 조회 바 ── */
+.history-query-bar{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding:10px 14px;background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);flex-wrap:wrap}
+.query-bar-title{font-size:16px;font-weight:700;color:var(--color-text-primary);margin-right:auto}
+.history-search-btn{padding:8px 18px;font-size:13px;font-weight:600;color:#fff;background:#1a3a5c;border:none;border-radius:6px;cursor:pointer;transition:background .15s;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.history-search-btn:hover{background:#15304d}
+.history-search-btn svg{width:14px;height:14px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.filter-select{padding:6px 10px;font-size:13px;border:0.5px solid var(--color-border-tertiary);border-radius:6px;background:var(--color-background-secondary);color:var(--color-text-primary);cursor:pointer;appearance:auto}
+.filter-date{padding:5px 8px;font-size:12px;border:0.5px solid var(--color-border-tertiary);border-radius:6px;background:var(--color-background-secondary);color:var(--color-text-primary)}
+.filter-label{font-size:12px;color:var(--color-text-tertiary);font-weight:500}
+.history-result-info{font-size:14px;color:var(--color-text-secondary);margin:8px;font-weight:600;margin-top:12px;}
 
 /* ── 처방 이력 카드 ── */
-.history-card{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);margin-bottom:8px;overflow:hidden}
-.history-header{padding:8px 12px;background:var(--color-background-secondary);display:flex;align-items:center;gap:8px;border-bottom:0.5px solid var(--color-border-tertiary)}
-.visit-date{font-size:14px;font-weight:700;color:var(--color-text-primary)}
-.visit-dx{font-size:13px;color:var(--color-text-secondary);flex:1}
-.visit-dept{font-size:13px;color:var(--color-text-tertiary);padding:2px 8px;border-radius:3px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary)}
-
-/* ── 당일 처방 카드 ── */
-.today-card{border-color:#FAC775;background:#FFFCF5}
-.today-card .drug-table th{background:#FDF3E0;color:#633806}
+.history-card{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);margin-bottom:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+.history-header{padding:10px 14px;background:var(--color-background-secondary);display:flex;align-items:center;gap:10px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.visit-date{font-size:14px;font-weight:700;color:var(--color-text-primary);white-space:nowrap}
+.visit-dx{font-size:13px;color:var(--color-text-secondary);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.visit-dept{font-size:12px;color:var(--color-text-tertiary);padding:3px 10px;border-radius:4px;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);white-space:nowrap}
 
 /* ── 약물 테이블 ── */
-.drug-table{width:100%;border-collapse:collapse}
-.drug-table th{font-size:12px;color:var(--color-text-secondary);font-weight:500;padding:6px 10px;border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);text-align:left}
-.drug-row{cursor:pointer;transition:background .1s}
-.drug-row:hover{background:var(--color-background-secondary)}
-.drug-row.sel{background:#E1F5EE}
-.drug-row td{font-size:14px;padding:8px 10px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary);vertical-align:middle;font-weight:400}
+.drug-table{width:100%;border-collapse:collapse;table-layout:fixed}
+.drug-table th{font-size:12px;color:var(--color-text-secondary);font-weight:500;padding:8px 12px;border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drug-table th:nth-child(1){width:30%}
+.drug-table th:nth-child(2){width:20%}
+.drug-table th:nth-child(3){width:12%}
+.drug-table th:nth-child(4){width:25%}
+.drug-table th:nth-child(5){width:13%}
+.drug-row td{font-size:13px;padding:9px 12px;border-bottom:0.5px solid var(--color-border-tertiary);color:var(--color-text-primary);vertical-align:middle;font-weight:400;overflow:hidden;text-overflow:ellipsis}
 .drug-row:last-child td{border-bottom:none}
-.drug-nm{font-weight:400}
-.drug-gen{font-size:12px;color:var(--color-text-tertiary);display:block}
-.atc-badge{font-size:12px;padding:2px 7px;border-radius:3px;border:0.5px solid}
-.fl{font-size:12px;padding:2px 7px;border-radius:3px;border:0.5px solid}
+.drug-nm{font-weight:500;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.drug-gen{font-size:11px;color:var(--color-text-tertiary);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.atc-badge{font-size:11px;padding:2px 7px;border-radius:3px;border:0.5px solid;white-space:nowrap;display:inline-block;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.fl{font-size:12px;padding:2px 7px;border-radius:3px;border:0.5px solid;white-space:nowrap}
 .fl.d{background:#FCEBEB;color:#A32D2D;border-color:#F09595}
 .fl.w{background:#FAEEDA;color:#633806;border-color:#FAC775}
 .fl.ok{background:#EAF3DE;color:#27500A;border-color:#C0DD97}
 
-/* ── 조회 바 ── */
-.history-query-bar{display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;justify-content:flex-end}
-.history-search-btn{padding:8px 18px;font-size:14px;font-weight:600;color:#fff;background:#1a3a5c;border:none;border-radius:var(--border-radius-lg);cursor:pointer;transition:background .15s;display:flex;align-items:center;gap:6px}
-.history-search-btn:hover{background:#15304d}
-.history-search-btn svg{width:15px;height:15px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.filter-select{padding:7px 10px;font-size:13px;border:0.5px solid var(--color-border-tertiary);border-radius:6px;background:var(--color-background-primary);color:var(--color-text-primary);cursor:pointer;appearance:auto}
-.filter-date{padding:5px 8px;font-size:12px;border:0.5px solid var(--color-border-tertiary);border-radius:6px;background:var(--color-background-primary);color:var(--color-text-primary)}
-.filter-label{font-size:12px;color:var(--color-text-secondary)}
-.history-result-info{font-size:12px;color:var(--color-text-secondary);margin:10px}
+/* ── 카드 내 주의사항 토글 ── */
+.card-warn-section{border-top:0.5px solid var(--color-border-tertiary)}
+.card-warn-header{display:flex;align-items:center;padding:10px 14px;cursor:pointer;user-select:none}
+.card-warn-header:hover{background:transparent}
+.card-warn-title{font-size:13px;font-weight:700;color:#C41E1E;flex:1}
+.card-warn-title::before{content:'⚠';margin-right:5px;color:#C41E1E}
+.toggle-arrow{font-size:11px;color:var(--color-text-tertiary);transition:transform .2s}
+.toggle-arrow.open{transform:rotate(180deg)}
+.toggle-body{padding:0 14px 14px;border-top:0.5px solid var(--color-border-tertiary)}
+.warn-sub-title{font-size:12px;font-weight:600;color:var(--color-text-secondary);margin:8px 0 6px;padding-bottom:4px;border-bottom:0.5px solid var(--color-border-tertiary)}
 
-/* ── 팝업 ── */
-.popup-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;align-items:flex-start;justify-content:flex-end;padding:14px}
-.popup-overlay.show{display:flex}
-.popup{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-secondary);width:460px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden}
-.ph{background:#004D5B;padding:10px 14px;display:flex;justify-content:space-between;align-items:flex-start;flex-shrink:0}
-.ph-drug{color:#fff;font-size:16px;font-weight:700}
-.ph-sub{color:#94D2BD;font-size:13px;margin-top:2px}
-.ph-x{color:#94D2BD;font-size:18px;cursor:pointer;line-height:1}
-.verdict{padding:8px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;border-bottom:0.5px solid var(--color-border-tertiary)}
-.vi{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;color:#fff;flex-shrink:0}
-.vt{font-size:14px;font-weight:700}
-.vs{font-size:13px;color:var(--color-text-secondary);margin-top:1px}
-.pb{overflow-y:auto;flex:1}
-.sec{border-bottom:0.5px solid var(--color-border-tertiary);padding:10px 14px}
-.sec-hd{display:flex;align-items:center;gap:6px;margin-bottom:7px}
-.sec-ic{width:10px;height:10px;border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.sec-lb{font-size:13px;font-weight:700;color:var(--color-text-secondary);letter-spacing:.3px}
-.atc-box{background:var(--color-background-secondary);border-radius:6px;padding:7px 10px;margin-bottom:6px}
-.atc-code{font-size:14px;font-weight:700;color:var(--color-text-primary)}
-.atc-eng{font-size:13px;color:var(--color-text-secondary);margin-top:1px}
-.atc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
-.atc-tag{font-size:12px;padding:3px 8px;border-radius:3px;border:0.5px solid}
-.sc-label{font-size:13px;color:var(--color-text-secondary);margin:6px 0 4px}
-.sc-row{display:flex;flex-direction:column;gap:4px;padding:8px 10px;border-radius:5px;margin-bottom:5px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary)}
-.sc-row.dup{background:#FCEBEB;border-color:#F09595}
-.sc-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-.sc-nm{font-size:14px;font-weight:700;color:var(--color-text-primary);flex:1}
-.sc-atc{font-size:12px;color:var(--color-text-secondary)}
-.sc-note{font-size:12px;color:var(--color-text-secondary);margin-top:0;padding-left:13px;line-height:1.5}
-.sc-badge{font-size:12px;padding:2px 7px;border-radius:3px}
-.sc-badge.dup{background:#F09595;color:#501313}
-.sc-badge.ok{background:#EAF3DE;color:#27500A}
-.tl-axis{display:flex;margin-left:72px;margin-bottom:3px}
-.tl-tick{flex:1;font-size:11px;color:var(--color-text-tertiary);text-align:center}
-.tl-row{display:flex;align-items:center;gap:7px;margin-bottom:3px}
-.tl-lbl{width:68px;font-size:12px;color:var(--color-text-secondary);text-align:right;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tl-bg{flex:1;height:18px;background:var(--color-background-secondary);border-radius:3px;overflow:hidden;position:relative}
-.tl-fill{position:absolute;top:2px;height:14px;border-radius:2px;display:flex;align-items:center;padding:0 3px}
-.tl-txt{font-size:11px;white-space:nowrap;overflow:hidden}
-.tl-day{font-size:12px;color:var(--color-text-tertiary);width:30px;text-align:right;flex-shrink:0}
-.ol-note{font-size:13px;padding:6px 10px;border-radius:5px;margin-top:4px;display:flex;align-items:flex-start;gap:5px;line-height:1.5}
-.dose-block{display:flex;align-items:center;gap:8px;margin-bottom:4px}
-.dose-nm{font-size:14px;font-weight:700;color:var(--color-text-primary);width:100px;flex-shrink:0}
-.dose-bg{flex:1;height:7px;background:var(--color-border-tertiary);border-radius:4px;overflow:hidden}
-.dose-fill{height:100%;border-radius:4px}
-.dose-val{font-size:13px;color:var(--color-text-secondary);width:110px;text-align:right;flex-shrink:0}
-.dose-note-box{font-size:13px;color:var(--color-text-secondary);background:var(--color-background-secondary);border-radius:4px;padding:5px 9px;margin-top:3px}
+/* ── DDI 카드 ── */
 .ddi-card{border-radius:7px;border:0.5px solid;padding:7px 9px;margin-bottom:5px}
 .ddi-card.lv0{background:#FCEBEB;border-color:#F09595}
 .ddi-card.lv1{background:#FAEEDA;border-color:#FAC775}
@@ -147,11 +106,8 @@ body{font-family:var(--font-sans);background:var(--color-background-tertiary)}
 .ddi-type{font-size:12px;color:var(--color-text-secondary);margin-left:auto}
 .ddi-mech{font-size:13px;color:var(--color-text-secondary);line-height:1.5;margin-bottom:2px}
 .ddi-act{font-size:13px;padding:4px 8px;border-radius:4px;background:rgba(0,0,0,0.05);color:var(--color-text-primary);line-height:1.5}
+
+/* ── 다제약물 ── */
 .poly-box{background:#F1EFE8;border:0.5px solid #B4B2A9;border-radius:7px;padding:7px 10px}
-.poly-t{font-size:13px;font-weight:700;color:#2C2C2A;margin-bottom:4px}
 .poly-item{font-size:13px;color:#5F5E5A;padding:2px 0;display:flex;align-items:flex-start;gap:5px;line-height:1.4}
 .poly-dot{width:5px;height:5px;border-radius:50%;background:#888780;flex-shrink:0;margin-top:4px}
-.pf{padding:8px 14px;background:var(--color-background-secondary);border-top:0.5px solid var(--color-border-tertiary);display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
-.pf-note{font-size:13px;color:var(--color-text-secondary)}
-.pf-btn{font-size:14px;padding:6px 14px;border-radius:6px;border:0.5px solid #004D5B;background:#004D5B;color:#fff;cursor:pointer}
-.empty-sc{font-size:13px;color:var(--color-text-secondary);padding:5px 8px;background:var(--color-background-secondary);border-radius:5px}
