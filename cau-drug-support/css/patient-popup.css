@@ -1,0 +1,169 @@
+/* ===== 기본 리셋 ===== */
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:14px;background:#f0f2f5;color:#1a1a1a}
+.wrap{max-width:1100px;margin:0 auto;background:#fff;min-height:100vh;display:flex;flex-direction:column;box-shadow:0 0 20px rgba(0,0,0,0.08)}
+
+/* ===== 헤더 ===== */
+.header{background:#004D5B;padding:12px 24px;display:flex;justify-content:space-between;align-items:center}
+.header-title{color:#fff;font-size:15px;font-weight:600}
+.header-meta{color:#94D2BD;font-size:12px;margin-top:2px}
+.header-right{display:flex;align-items:center;gap:12px}
+.header-time{color:#94D2BD;font-size:12px}
+.triage-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:4px;color:#fff}
+.triage-2{background:#EF9F27}
+.triage-3{background:#378ADD}
+
+/* ===== 환자 정보 상단 ===== */
+.patient-section{background:#fff;border-bottom:2px solid #004D5B}
+.pi-bar{display:flex;align-items:center;gap:16px;padding:14px 24px;background:#f7f8fa;border-bottom:1px solid #e5e7eb;flex-wrap:wrap}
+.pi-avatar{width:44px;height:44px;border-radius:50%;background:#004D5B;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;flex-shrink:0}
+.pi-main{flex:1;min-width:180px}
+.pi-name{font-size:18px;font-weight:700;color:#1a1a1a}
+.pi-detail{font-size:13px;color:#6b7280;margin-top:2px}
+.pi-badges{display:flex;gap:8px;flex-wrap:wrap}
+.pi-badge{font-size:11px;padding:4px 10px;border-radius:4px;background:#fff;border:1px solid #e5e7eb;color:#6b7280}
+.pi-badge.id{background:#E6F1FB;border-color:#B5D4F4;color:#042C53;font-weight:600}
+
+/* 내원 정보 바 */
+.visit-bar{display:flex;align-items:center;gap:16px;padding:10px 24px;background:#fff;border-bottom:1px solid #e5e7eb;flex-wrap:wrap}
+.visit-label{font-size:11px;color:#9ca3af;font-weight:600;flex-shrink:0}
+.visit-value{font-size:13px;color:#1a1a1a;font-weight:500}
+.visit-divider{width:1px;height:20px;background:#e5e7eb;flex-shrink:0}
+
+/* 진단명 */
+.dx-section{padding:12px 24px;background:#fff}
+.dx-title{font-size:12px;color:#6b7280;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.dx-card{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:6px;border:1px solid #e5e7eb;background:#f7f8fa;margin:0 6px 6px 0}
+.dx-card.alert{background:#FAEEDA;border-color:#FAC775}
+.dx-code{font-size:11px;color:#6b7280;font-weight:600}
+.dx-name{font-size:13px;color:#1a1a1a;font-weight:500}
+.dx-warn{font-size:10px;color:#854F0B;font-weight:600;margin-left:4px}
+
+/* ===== 콘텐츠 영역 ===== */
+.content-area{padding:0 24px 24px}
+
+/* 섹션 헤더 */
+.sec-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #004D5B}
+.sec-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.sec-title{font-size:15px;font-weight:700;color:#1a1a1a}
+.sec-sub{font-size:12px;color:#6b7280;margin-left:auto}
+
+/* 과거 이력 카드 */
+.hist-card{background:#f7f8fa;border:1px solid #e5e7eb;border-radius:8px;padding:12px 14px;margin-bottom:10px}
+.hist-top{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.hist-date{font-size:13px;font-weight:700;color:#1a1a1a}
+.hist-dept{font-size:11px;color:#6b7280}
+.hist-outcome{font-size:11px;padding:2px 8px;border-radius:4px;background:#E1F5EE;color:#0F6E56;border:1px solid #5DCAA5}
+.hist-diag{font-size:12px;color:#6b7280;margin-bottom:6px}
+.hist-diag b{font-weight:600}
+.hist-drug-label{font-size:11px;color:#6b7280;margin-bottom:4px;font-weight:600}
+.hist-drug{display:flex;align-items:center;gap:8px;padding:5px 10px;background:#fff;border:1px solid #e5e7eb;border-radius:5px;margin-bottom:3px}
+.hist-drug-name{font-size:12px;font-weight:600;color:#1a1a1a;flex:1}
+.hist-drug-dose{font-size:11px;color:#6b7280}
+.hist-drug-days{font-size:11px;color:#9ca3af}
+.hist-drug-note{font-size:10px;padding:2px 6px;border-radius:3px;background:#E6F1FB;color:#042C53}
+
+/* ===== 처방 테이블 ===== */
+.rx-table{width:100%;border-collapse:collapse;margin-bottom:12px}
+.rx-table th{font-size:12px;color:#6b7280;font-weight:600;padding:8px 10px;background:#f7f8fa;border-bottom:1px solid #d1d5db;text-align:left}
+.rx-table td{font-size:13px;padding:8px 10px;border-bottom:1px solid #e5e7eb;vertical-align:middle}
+.rx-row{cursor:pointer;transition:background .12s}
+.rx-row:hover{background:#f7f8fa}
+.rx-row.sel{background:#E6F1FB}
+.rx-drug{font-weight:600}
+.rx-gen{font-size:11px;color:#9ca3af;display:block}
+.rx-atc{font-size:11px;color:#6b7280}
+.rx-flag{font-size:10px;padding:2px 7px;border-radius:3px;font-weight:600;display:inline-block}
+.rx-flag.w{background:#FAEEDA;color:#633806;border:1px solid #FAC775}
+.rx-flag.ok{background:#E1F5EE;color:#0F6E56;border:1px solid #5DCAA5}
+
+/* ===== 약물 상세 패널 ===== */
+.detail-panel{background:#f7f8fa;border:1px solid #e5e7eb;border-radius:10px;margin-bottom:16px;overflow:hidden;display:none}
+.detail-panel.show{display:block}
+.dp-header{background:#004D5B;padding:12px 16px;display:flex;justify-content:space-between;align-items:flex-start}
+.dp-drug{color:#fff;font-size:15px;font-weight:600}
+.dp-atc{color:#94D2BD;font-size:12px;margin-top:2px}
+.dp-close{color:#94D2BD;font-size:18px;cursor:pointer;line-height:1}
+.dp-verdict{padding:10px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #e5e7eb}
+.dp-vi{width:32px;height:32px;border-radius:50%;display:flex;align
+/* ===== 약물 상세 패널 ===== */
+.detail-panel{background:#f7f8fa;border:1px solid #e5e7eb;border-radius:10px;margin-bottom:16px;overflow:hidden;display:none}
+.detail-panel.show{display:block}
+.dp-header{background:#004D5B;padding:12px 16px;display:flex;justify-content:space-between;align-items:flex-start}
+.dp-drug{color:#fff;font-size:15px;font-weight:600}
+.dp-atc{color:#94D2BD;font-size:12px;margin-top:2px}
+.dp-close{color:#94D2BD;font-size:18px;cursor:pointer;line-height:1}
+.dp-verdict{padding:10px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #e5e7eb}
+.dp-vi{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0}
+.dp-vt{font-size:14px;font-weight:600}
+.dp-vs{font-size:12px;color:#6b7280;margin-top:1px}
+.dp-sec{padding:12px 16px;border-bottom:1px solid #e5e7eb}
+.dp-sec:last-child{border-bottom:none}
+.dp-sec-title{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.dp-sec-icon{width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.dp-sec-label{font-size:13px;font-weight:600;color:#6b7280}
+
+/* 약물 설명 그리드 */
+.info-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px}
+.info-card{background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:8px 10px}
+.info-card-label{font-size:10px;color:#9ca3af;margin-bottom:2px;font-weight:600}
+.info-card-value{font-size:13px;color:#1a1a1a;font-weight:600}
+.info-card-sub{font-size:11px;color:#6b7280;margin-top:2px}
+.dose-bar-wrap{display:flex;align-items:center;gap:10px;margin-top:6px}
+.dose-bar-bg{flex:1;height:8px;background:#e5e7eb;border-radius:4px;overflow:hidden}
+.dose-bar-fill{height:100%;border-radius:4px}
+.dose-bar-text{font-size:11px;color:#6b7280;flex-shrink:0}
+.dose-note{font-size:11px;color:#6b7280;background:#fff;border-radius:4px;padding:6px 10px;margin-top:6px;line-height:1.5;border:1px solid #e5e7eb}
+.atc-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.atc-tag{font-size:11px;padding:3px 8px;border-radius:3px}
+
+/* 타임라인 */
+.tl-row{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.tl-label{width:90px;font-size:11px;color:#6b7280;text-align:right;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl-bg{flex:1;height:18px;background:#e5e7eb;border-radius:3px;overflow:hidden;position:relative}
+.tl-fill{position:absolute;top:2px;height:14px;border-radius:2px;display:flex;align-items:center;padding:0 4px}
+.tl-txt{font-size:10px;white-space:nowrap;overflow:hidden}
+.tl-day{font-size:11px;color:#9ca3af;width:40px;text-align:right;flex-shrink:0}
+.tl-axis{display:flex;margin-left:98px;margin-bottom:4px}
+.tl-tick{flex:1;font-size:10px;color:#9ca3af;text-align:center}
+.overlap-note{font-size:11px;padding:6px 10px;border-radius:5px;margin-top:6px;line-height:1.5}
+
+/* 상호작용 카드 */
+.ddi-card{border-radius:8px;border:1px solid;padding:8px 10px;margin-bottom:8px}
+.ddi-card.lv0{background:#FCEBEB;border-color:#F09595}
+.ddi-card.lv1{background:#FAEEDA;border-color:#FAC775}
+.ddi-card.lv2{background:#E6F1FB;border-color:#B5D4F4}
+.ddi-top{display:flex;align-items:center;gap:7px;margin-bottom:4px;flex-wrap:wrap}
+.lv-chip{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;flex-shrink:0}
+.lv0 .lv-chip{background:#E24B4A;color:#fff}
+.lv1 .lv-chip{background:#EF9F27;color:#412402}
+.lv2 .lv-chip{background:#378ADD;color:#fff}
+.ddi-with{font-size:13px;font-weight:600;color:#1a1a1a}
+.ddi-type{font-size:11px;color:#6b7280;margin-left:auto;flex-shrink:0}
+.ddi-mech{font-size:12px;color:#6b7280;line-height:1.6;margin-bottom:4px}
+.ddi-act{font-size:12px;padding:4px 8px;border-radius:4px;background:rgba(0,0,0,0.05);color:#1a1a1a;line-height:1.6}
+
+/* 다제약물 */
+.poly-box{background:#F1EFE8;border:1px solid #B4B2A9;border-radius:8px;padding:8px 12px}
+.poly-t{font-size:13px;font-weight:600;color:#2C2C2A;margin-bottom:5px}
+.poly-item{font-size:12px;color:#5F5E5A;padding:3px 0;display:flex;align-items:flex-start;gap:6px;line-height:1.5}
+.poly-dot{width:5px;height:5px;border-radius:50%;background:#888780;flex-shrink:0;margin-top:6px}
+.no-ddi{font-size:13px;color:#6b7280;padding:6px 0}
+
+/* ===== 푸터 ===== */
+.footer{border-top:1px solid #e5e7eb;padding:10px 24px;display:flex;justify-content:space-between;align-items:center;background:#f7f8fa;flex-wrap:wrap;gap:8px}
+.footer-note{font-size:11px;color:#6b7280}
+.footer-btn{font-size:12px;padding:6px 16px;border-radius:6px;border:1px solid #004D5B;background:#004D5B;color:#fff;cursor:pointer}
+
+/* ===== 반응형 ===== */
+@media(max-width:768px){
+  .pi-bar{padding:12px 16px}
+  .visit-bar{padding:8px 16px;gap:10px}
+  .dx-section{padding:10px 16px}
+  .content-area{padding:0 16px 16px}
+  .info-grid{grid-template-columns:1fr}
+  .pi-badges{width:100%}
+  .tl-label{width:60px;font-size:10px}
+  .tl-axis{margin-left:68px}
+  .footer{padding:8px 16px}
+}

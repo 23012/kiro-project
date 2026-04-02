@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>약 처방 지원 시스템 — 환자 중심 처방 분석</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:14px;background:#f0f2f5;color:#1a1a1a}
+.wrap{max-width:1100px;margin:0 auto;background:#fff;min-height:100vh;display:flex;flex-direction:column;box-shadow:0 0 20px rgba(0,0,0,0.08)}
+.header{background:#004D5B;padding:12px 24px;display:flex;justify-content:space-between;align-items:center}
+.header-title{color:#fff;font-size:15px;font-weight:600}
+.header-meta{color:#94D2BD;font-size:12px;margin-top:2px}
+.header-right{display:flex;align-items:center;gap:12px}
+.header-time{color:#94D2BD;font-size:12px}
+.triage-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:4px;color:#fff}
+.triage-2{background:#EF9F27}
+.patient-section{background:#fff;border-bottom:2px solid #004D5B}
+.pi-bar{display:flex;align-items:center;gap:16px;padding:14px 24px;background:#f7f8fa;border-bottom:1px solid #e5e7eb;flex-wrap:wrap}
+.pi-avatar{width:44px;height:44px;border-radius:50%;background:#004D5B;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;flex-shrink:0}
+.pi-main{flex:1;min-width:180px}
+.pi-name{font-size:18px;font-weight:700;color:#1a1a1a}
+.pi-detail{font-size:13px;color:#6b7280;margin-top:2px;display:flex;gap:12px;flex-wrap:wrap}
+.pi-badges{display:flex;gap:8px;flex-wrap:wrap}
+.pi-badge{font-size:11px;padding:4px 10px;border-radius:4px;background:#fff;border:1px solid #e5e7eb;color:#6b7280}
+.pi-badge.id{background:#E6F1FB;border-color:#B5D4F4;color:#042C53;font-weight:600}
+.visit-bar{display:flex;align-items:center;gap:16px;padding:10px 24px;background:#fff;border-bottom:1px solid #e5e7eb;flex-wrap:wrap}
+.visit-label{font-size:11px;color:#9ca3af;font-weight:600;flex-shrink:0}
+.visit-value{font-size:13px;color:#1a1a1a;font-weight:500}
+.visit-divider{width:1px;height:20px;background:#e5e7eb;flex-shrink:0}
+.dx-section{padding:12px 24px;background:#fff}
+.dx-title{font-size:12px;color:#6b7280;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.dx-card{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:6px;border:1px solid #e5e7eb;background:#f7f8fa;margin:0 6px 6px 0}
+.dx-card.alert{background:#FAEEDA;border-color:#FAC775}
+.dx-code{font-size:11px;color:#6b7280;font-weight:600}
+.dx-name{font-size:13px;color:#1a1a1a;font-weight:500}
+.dx-warn{font-size:10px;color:#854F0B;font-weight:600;margin-left:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <div>
+      <div class="header-title">약 처방 지원 시스템</div>
+      <div class="header-meta">카우누리 DUR 연동 | 응급실</div>
+    </div>
+    <div class="header-right">
+      <span class="triage-badge triage-2">Triage Lv.2</span>
+      <div class="header-time">BED C2</div>
+    </div>
+  </div>
+
+  <!-- 상단: 환자 정보 -->
+  <div class="patient-section">
+    <div class="pi-bar">
+      <div class="pi-avatar">김</div>
+      <div class="pi-main">
+        <div class="pi-name">김원태</div>
+        <div class="pi-detail">
+          <span>남성 · 43세</span>
+        </div>
+      </div>
+      <div class="pi-badges">
+        <div class="pi-badge id">환자등록번호 00000000</div>
+        <div class="pi-badge">응급의학과 · 김찬웅</div>
+        <div class="pi-badge">내원수단: 기타 자동차</div>
+      </div>
+    </div>
+    <div class="visit-bar">
+      <span class="visit-label">내원 일시</span>
+      <span class="visit-value">2026.03.20 23:40</span>
+      <div class="visit-divider"></div>
+      <span class="visit-label">발병 일시</span>
+      <span class="visit-value">2026.03.20 23:00</span>
+      <div class="visit-divider"></div>
+      <span class="visit-label">전문의 진료</span>
+      <span class="visit-value">2026.03.20 23:50 (김찬웅)</span>
+      <div class="visit-divider"></div>
+      <span class="visit-label">내원 사유</span>
+      <span class="visit-value">질병</span>
+    </div>
+    <div class="dx-section">
+      <div class="dx-title">주증상 및 진단명</div>
+      <div class="dx-card alert">
+        <span class="dx-code">C0012833</span>
+        <span class="dx-name">Dizziness (어지러움)</span>
+        <span class="dx-warn">⚠ 주증상</span>
+      </div>
+    </div>
+  </div>
+""
+
+  <!-- 하단: 과거 동일 증상 처방내역 + 현재 처방 -->
+  <div style="padding:0 24px 24px">
+
+    <!-- 과거 동일 증상(dizziness) 처방 이력 -->
+    <div style="margin-top:16px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #004D5B">
+        <div style="width:28px;height:28px;border-radius:6px;background:#FAEEDA;color:#854F0B;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">이</div>
+        <span style="font-size:15px;font-weight:700;color:#1a1a1a">과거 동일 증상 처방내역</span>
+        <span style="font-size:12px;color:#6b7280;margin-left:auto">dizziness 관련 내원 2건 매칭</span>
+      </div>
+      <div id="historyArea"></div>
+    </div>
+
+    <!-- 현재 처방 약물 -->
+    <div style="margin-top:20px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid #004D5B">
+        <div style="width:28px;height:28px;border-radius:6px;background:#E6F1FB;color:#185FA5;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">Rx</div>
+        <span style="font-size:15px;font-weight:700;color:#1a1a1a">현재 처방 약물</span>
+        <span style="font-size:12px;color:#6b7280;margin-left:auto">3종 처방</span>
+      </div>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:12px">
+        <thead><tr>
+          <th style="font-size:12px;color:#6b7280;font-weight:600;padding:8px 10px;background:#f7f8fa;border-bottom:1px solid #d1d5db;text-align:left">약품명</th>
+          <th style="font-size:12px;color:#6b7280;font-weight:600;padding:8px 10px;background:#f7f8fa;border-bottom:1px solid #d1d5db;text-align:left">계통</th>
+          <th style="font-size:12px;color:#6b7280;font-weight:600;padding:8px 10px;background:#f7f8fa;border-bottom:1px solid #d1d5db;text-align:left">용량 / 용법</th>
+          <th style="font-size:12px;color:#6b7280;font-weight:600;padding:8px 10px;background:#f7f8fa;border-bottom:1px solid #d1d5db;text-align:left">기간</th>
+          <th style="font-size:12px;color:#6b7280;font-weight:600;padding:8px 10px;background:#f7f8fa;border-bottom:1px solid #d1d5db;text-align:left">상태</th>
+        </tr></thead>
+        <tbody id="rxBody"></tbody>
+      </table>
+      <div id="detailPanel" style="display:none"></div>
+    </div>
+  </div>
+""
+
+  <!-- 푸터 -->
+  <div style="border-top:1px solid #e5e7eb;padding:10px 24px;display:flex;justify-content:space-between;align-items:center;background:#f7f8fa;flex-wrap:wrap;gap:8px">
+    <div style="font-size:11px;color:#6b7280">결정 일시: 2026.03.21 00:40 | 퇴실: 00:45 | 퇴실구분: 귀가 (증상이 호전되어 귀가)</div>
+    <button style="font-size:12px;padding:6px 16px;border-radius:6px;border:1px solid #004D5B;background:#004D5B;color:#fff;cursor:pointer">처방 검토 메모</button>
+  </div>
+</div>
+
+<script src="data/patient-rows.js"></script>
+<script src="data/patient-drug-details.js"></script>
+<script src="data/patient-history.js"></script>
+<script>
+(function(){
+  // 과거 동일 증상 처방 이력 렌더링
+  const hArea = document.getElementById('historyArea');
+  pastHistory.forEach((h,i) => {
+    const drugsHtml = h.drugs.map(d =>
+      `<div style="display:flex;align-items:center;gap:8px;padding:5px 10px;background:#fff;border:1px solid #e5e7eb;border-radius:5px;margin-bottom:3px">
+        <span style="font-size:12px;font-weight:600;color:#1a1a1a;flex:1">${d.name}</span>
+        <span style="font-size:11px;color:#6b7280">${d.dose}</span>
+        <span style="font-size:11px;color:#9ca3af">${d.days}일</span>
+        ${d.note ? `<span style="font-size:10px;padding:2px 6px;border-radius:3px;background:#E6F1FB;color:#042C53">${d.note}</span>` : ''}
+      </div>`
+    ).join('');
+
+    hArea.innerHTML += `
+      <div style="background:#f7f8fa;border:1px solid #e5e7eb;border-radius:8px;padding:12px 14px;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+          <span style="font-size:13px;font-weight:700;color:#1a1a1a">${h.visitDate}</span>
+          <span style="font-size:11px;color:#6b7280">${h.dept} · ${h.doctor}</span>
+          <span style="font-size:11px;padding:2px 8px;border-radius:4px;background:#E1F5EE;color:#0F6E56;border:1px solid #5DCAA5">${h.outcome}</span>
+        </div>
+        <div style="font-size:12px;color:#6b7280;margin-bottom:6px">
+          <span style="font-weight:600">${h.diagCode}</span> ${h.diagnosis} — 증상: ${h.symptom}
+        </div>
+        <div style="font-size:11px;color:#6b7280;margin-bottom:4px;font-weight:600">처방 약물</div>
+        ${drugsHtml}
+      </div>`;
+  });
