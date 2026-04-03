@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>내가 먹는 약! 한눈에</title>
+  <link rel="stylesheet" href="css/medication-status-popup.css">
+</head>
+<body>
+
+<div class="overlay">
+<div class="popup">
+
+  <div class="popup-header">
+    <div class="popup-header-left">
+      <div class="header-icon">💊</div>
+      <div>
+        <div class="header-title">내가 먹는 약! 한눈에</div>
+      </div>
+    </div>
+    <button class="close-btn">✕</button>
+  </div>
+
+  <div class="date-bar">
+    <div class="date-badge">2026. 04. 03</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab(0, this)">현재 복용</button>
+    <button class="tab" onclick="switchTab(1, this)">추가</button>
+    <button class="tab" onclick="switchTab(2, this)">중단</button>
+    <button class="tab" onclick="switchTab(3, this)">변경</button>
+  </div>
+
+  <div id="tab-0" class="tab-content">
+    <div class="summary-bar">
+      <span class="summary-chip chip-active">복용 중 4종</span>
+      <span class="summary-chip chip-stopped">만료됨 10+종</span>
+    </div>
+    <div class="section-label">현재 복용 중인 약물</div>
+
+    <div class="drug-card">
+      <div class="drug-dot dot-active"></div>
+      <div style="flex:1">
+        <div class="drug-name">아모프헬정 (복합제 3성분)</div>
+        <div class="drug-component">amlodipine 1.67mg + losartan 16.67mg + chlorthalidone 4.17mg</div>
+        <div class="drug-rx">처방일 2026.03.05 · 1일 1정</div>
+      </div>
+      <div class="drug-meta">
+        <div class="drug-days days-active">31일 남음</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bg"><div class="progress-fill" style="width:48%"></div></div>
+        </div>
+        <div class="drug-info">~2026.05.04 까지</div>
+      </div>
+    </div>
+
+    <div class="drug-card">
+      <div class="drug-dot dot-active"></div>
+      <div style="flex:1">
+        <div class="drug-name">시그마트정 5mg</div>
+        <div class="drug-component">nicorandil</div>
+        <div class="drug-rx">처방일 2026.03.05 · 1일 1정</div>
+      </div>
+      <div class="drug-meta">
+        <div class="drug-days days-active">31일 남음</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bg"><div class="progress-fill" style="width:48%"></div></div>
+        </div>
+        <div class="drug-info">~2026.05.04 까지</div>
+      </div>
+    </div>
+
+    <div class="drug-card">
+      <div class="drug-dot dot-active"></div>
+      <div style="flex:1">
+        <div class="drug-name">플라빅스정 75mg</div>
+        <div class="drug-component">clopidogrel bisulfate</div>
+        <div class="drug-rx">처방일 2026.03.05 · 1일 1정</div>
+      </div>
+      <div class="drug-meta">
+        <div class="drug-days days-active">31일 남음</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bg"><div class="progress-fill" style="width:48%"></div></div>
+        </div>
+        <div class="drug-info">~2026.05.04 까지</div>
+      </div>
+    </div>
+
+    <div class="drug-card">
+      <div class="drug-dot dot-active"></div>
+      <div style="flex:1">
+        <div class="drug-name">토바스틴정 10.85mg</div>
+        <div class="drug-component">atorvastatin calcium</div>
+        <div class="drug-rx">처방일 2026.03.05 · 1일 1정</div>
+      </div>
+      <div class="drug-meta">
+        <div class="drug-days days-active">31일 남음</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bg"><div class="progress-fill" style="width:48%"></div></div>
+        </div>
+        <div class="drug-info">~2026.05.04 까지</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-1" class="tab-content" style="display:none">
+    <div class="date-range-row">
+      <span class="range-label">기간 설정</span>
+      <select class="range-select" onchange="handleRangeChange(this.value)">
+        <option value="1">최근 1개월</option>
+        <option value="3" selected>최근 3개월</option>
+        <option value="6">최근 6개월</option>
+        <option value="12">최근 1년</option>
+        <option value="custom">직접 입력</option>
+      </select>
+      <div class="date-input-group" style="display:none">
+        <input type="date" class="date-input" value="2026-01-03"> <span class="date-input-sep">~</span> <input type="date" class="date-input" value="2026-04-03">
+      </div>
+      <span class="range-display" style="font-size:11px;color:var(--color-text-secondary);margin-left:auto">2026.01.03 ~ 2026.04.03</span>
+    </div>
+    <div class="section-label">새로 추가된 약물</div>
+    <div class="drug-card">
+      <div class="drug-dot dot-new"></div>
+      <div style="flex:1">
+        <div class="drug-name">아모프헬정 (복합제 3성분)</div>
+        <div class="drug-component">amlodipine + losartan + chlorthalidone</div>
+        <div class="drug-rx">추가일 2026.03.05 · 기존 단독제 2종 통합</div>
+      </div>
+      <div class="drug-meta"><div class="drug-days days-new">신규</div></div>
+    </div>
+    <div style="margin-top:20px">
+    <div class="section-label" style="margin-bottom:6px">단기 처방 (임시)</div>
+    <div class="drug-card">
+      <div class="drug-dot dot-new"></div>
+      <div style="flex:1">
+        <div class="drug-name">아벨록스정 400mg</div>
+        <div class="drug-component">moxifloxacin hydrochloride</div>
+        <div class="drug-rx">처방일 2026.01.16 · 7일 처방 (만료)</div>
+      </div>
+      <div class="drug-meta"><div class="drug-days days-stopped">만료</div></div>
+    </div>
+    </div>
+  </div>
+
+  <div id="tab-2" class="tab-content" style="display:none">
+    <div class="date-range-row">
+      <span class="range-label">기간 설정</span>
+      <select class="range-select" onchange="handleRangeChange(this.value)">
+        <option value="1">최근 1개월</option>
+        <option value="3" selected>최근 3개월</option>
+        <option value="6">최근 6개월</option>
+        <option value="12">최근 1년</option>
+        <option value="custom">직접 입력</option>
+      </select>
+      <div class="date-input-group" style="display:none">
+        <input type="date" class="date-input" value="2026-01-03"> <span class="date-input-sep">~</span> <input type="date" class="date-input" value="2026-04-03">
+      </div>
+      <span class="range-display" style="font-size:11px;color:var(--color-text-secondary);margin-left:auto">2026.01.03 ~ 2026.04.03</span>
+    </div>
+    <div class="section-label">복용 중단된 약물</div>
+    <div class="drug-card">
+      <div class="drug-dot dot-stopped"></div>
+      <div style="flex:1">
+        <div class="drug-name">코스카정 25mg</div>
+        <div class="drug-component">losartan potassium</div>
+        <div class="drug-rx">마지막 처방 2026.01.03 · 중단일 추정 2026.03.04</div>
+      </div>
+      <div class="drug-meta"><div class="drug-days days-stopped">중단</div></div>
+    </div>
+    <div class="drug-card">
+      <div class="drug-dot dot-stopped"></div>
+      <div style="flex:1">
+        <div class="drug-name">명문암로디핀정 5mg</div>
+        <div class="drug-component">amlodipine besylate</div>
+        <div class="drug-rx">마지막 처방 2026.01.03 · 중단일 추정 2026.03.04</div>
+      </div>
+      <div class="drug-meta"><div class="drug-days days-stopped">중단</div></div>
+    </div>
+    <div class="drug-card">
+      <div class="drug-dot dot-stopped"></div>
+      <div style="flex:1">
+        <div class="drug-name">레보틸정 5mg</div>
+        <div class="drug-component">levocetirizine dihydrochloride</div>
+        <div class="drug-rx">마지막 처방 2026.01.03 · 중단일 추정 2026.03.04</div>
+      </div>
+      <div class="drug-meta"><div class="drug-days days-stopped">중단</div></div>
+    </div>
+  </div>
+
+  <div id="tab-3" class="tab-content" style="display:none">
+    <div class="date-range-row">
+      <span class="range-label">기간 설정</span>
+      <select class="range-select" onchange="handleRangeChange(this.value)">
+        <option value="1">최근 1개월</option>
+        <option value="3" selected>최근 3개월</option>
+        <option value="6">최근 6개월</option>
+        <option value="12">최근 1년</option>
+        <option value="custom">직접 입력</option>
+      </select>
+      <div class="date-input-group" style="display:none">
+        <input type="date" class="date-input" value="2026-01-03"> <span class="date-input-sep">~</span> <input type="date" class="date-input" value="2026-04-03">
+      </div>
+      <span class="range-display" style="font-size:11px;color:var(--color-text-secondary);margin-left:auto">2026.01.03 ~ 2026.04.03</span>
+    </div>
+    <div class="section-label">용량 또는 제형 변경된 약물</div>
+    <div class="drug-card">
+      <div class="drug-dot dot-changed"></div>
+      <div style="flex:1">
+        <div class="drug-name">암로디핀 + 로사르탄 → 복합정 전환</div>
+        <div class="drug-component">amlodipine 5mg + losartan 25mg (단독 2종) → 아모프헬 복합제</div>
+        <div class="drug-rx">변경일 2026.03.05 · chlorthalidone 추가 병합</div>
+      </div>
+      <div class="drug-meta"><div class="drug-days days-changed">제형변경</div></div>
+    </div>
+    <div style="margin-top: 12px; padding: 10px 14px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary);">
+      <div style="font-size:11px; color: var(--color-text-secondary);">조회 기간 내 용량 변경 사항이 추가로 없습니다.</div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script src="js/medication-status-popup.js"></script>
+</body>
+</html>

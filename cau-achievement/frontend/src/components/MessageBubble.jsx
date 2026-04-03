@@ -57,9 +57,24 @@ function MessageBubble({ message, isFirst = false, isError = false }) {
   // 텍스트를 ⚠️ 경고 블록과 일반 텍스트로 분리
   const parts = displayText.split(/(\n*⚠️[^\n]*(?:\n(?!⚠️)[^\n]*)*)/g).filter(Boolean);
 
+  const copyToClipboard = async (text) => {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.left = '-9999px';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+  };
+
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(displayText);
+      await copyToClipboard(displayText);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {}
@@ -67,7 +82,7 @@ function MessageBubble({ message, isFirst = false, isError = false }) {
 
   const handlePortalCopy = async () => {
     try {
-      await navigator.clipboard.writeText(JSON.stringify(portalData, null, 2));
+      await copyToClipboard(JSON.stringify(portalData, null, 2));
       setPortalCopied(true);
       setTimeout(() => setPortalCopied(false), 2000);
     } catch {}
