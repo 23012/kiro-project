@@ -174,7 +174,7 @@ function App() {
           {state === 'uploading' && (
             <div className="loading-wrap">
               <div className="loading-spinner"></div>
-              <div className="loading-text">파일을 읽고 있습니다</div>
+              <div className="loading-text">내용을 읽고 있습니다</div>
             </div>
           )}
 
@@ -188,7 +188,7 @@ function App() {
               </div>
               <PreviewTable rows={previewRows || MOCK_PREVIEW_DATA} />
               <div className="preview-confirm">
-                <p className="preview-question">이 파일의 처방 내역을 분석할까요?</p>
+                <p className="preview-question">이 처방 내역을 분석할까요?</p>
                 <div className="preview-actions">
                   <button className="preview-btn preview-btn-yes" onClick={startAnalysis}>
                     네, 분석 시작
@@ -204,7 +204,7 @@ function App() {
           {state === 'loading' && (
             <div className="loading-wrap">
               <div className="loading-spinner"></div>
-              <div className="loading-text">처방 변동 사항을 분석하고 있습니다</div>
+              <div className="loading-text">변동 사항을 분석하고 있습니다</div>
               <div className="typing-indicator" style={{ marginTop: '12px' }}>
                 <span className="typing-text">분석 중</span>
                 <span className="typing-dot"></span>
@@ -217,7 +217,7 @@ function App() {
           {state === 'done' && report && (
             <div className="result-wrap">
               <div className="result-header">
-                <span className="result-file">📎 {fileName}</span>
+                <span className="result-title">분석 결과</span>
                 <button className="reset-btn" onClick={handleReset}>새 파일 분석</button>
               </div>
               <DrugChangeReport data={report} />

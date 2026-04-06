@@ -248,7 +248,7 @@
 .result-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: baseline;
   margin-bottom: 14px;
 }
 
@@ -659,6 +659,7 @@
 .dcr-changed-detail del {
   color: #bbb;
   text-decoration: line-through;
+  font-weight: 700;
 }
 
 .dcr-changed-highlight { color: #6b5ce7; }
@@ -833,4 +834,11 @@
 
 .home-send-btn:hover {
   background: #005a9a;
+}
+
+.result-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #555;
+  letter-spacing: 0.05em;
 }
