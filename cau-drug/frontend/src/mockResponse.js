@@ -1,3 +1,16 @@
+export const MOCK_PREVIEW_DATA = [
+  { date: '2026.03.05', name: '아모프렐정 1.67/16.67/4.17mg', ingredient: 'amlodipine 복합제(3성분)', dose: '1정', freq: '1회', days: '60일' },
+  { date: '2026.03.05', name: '시그마트정 5mg', ingredient: 'nicorandil', dose: '1정', freq: '1회', days: '60일' },
+  { date: '2026.03.05', name: '플라빅스정 75mg', ingredient: 'clopidogrel bisulfate', dose: '1정', freq: '1회', days: '60일' },
+  { date: '2026.03.05', name: '토바스틴정 10.85mg', ingredient: 'atorvastatin calcium', dose: '1정', freq: '1회', days: '60일' },
+  { date: '2026.01.16', name: '뮤코팩트정 30mg', ingredient: 'ambroxol hydrochloride', dose: '1정', freq: '3회', days: '7일' },
+  { date: '2026.01.16', name: '아벨록스정 400mg', ingredient: 'moxifloxacin hydrochloride', dose: '1정', freq: '1회', days: '7일' },
+  { date: '2026.01.03', name: '코스카정 25mg', ingredient: 'losartan potassium', dose: '1정', freq: '1회', days: '60일' },
+  { date: '2026.01.03', name: '명문암로디핀정 5mg', ingredient: 'amlodipine besylate', dose: '1정', freq: '1회', days: '60일' },
+  { date: '2026.01.03', name: '레보틸정 5mg', ingredient: 'levocetirizine dihydrochloride', dose: '1정', freq: '1회', days: '60일' },
+  { date: '2026.01.03', name: '플라빅스정 75mg', ingredient: 'clopidogrel bisulfate', dose: '1정', freq: '1회', days: '60일' },
+];
+
 const MOCK_DRUG_CHANGE_REPORT = {
   currentDateRange: '2026.03.05 ~ 만료일 2026.05.04',
   current: [
