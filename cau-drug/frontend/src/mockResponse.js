@@ -1,5 +1,5 @@
 const MOCK_DRUG_CHANGE_REPORT = {
-  currentDateRange: '2026.03.05 ~ 만료 2026.05.04',
+  currentDateRange: '2026.03.05 ~ 만료일 2026.05.04',
   current: [
     {
       name: '아모프렐정',
@@ -8,8 +8,8 @@ const MOCK_DRUG_CHANGE_REPORT = {
       categoryColor: '#e8f5e9',
       categoryTextColor: '#2e7d32',
       dosage: '1일 1정',
-      remainingDays: 31,
-      remainingPercent: 50,
+      remainingDays: 28,
+      remainingPercent: 47,
       remainingColor: '#4caf50',
       remainingUntil: '05.04',
     },
@@ -20,8 +20,8 @@ const MOCK_DRUG_CHANGE_REPORT = {
       categoryColor: '#fce4ec',
       categoryTextColor: '#c62828',
       dosage: '1일 1정',
-      remainingDays: 31,
-      remainingPercent: 50,
+      remainingDays: 28,
+      remainingPercent: 47,
       remainingColor: '#4caf50',
       remainingUntil: '05.04',
     },
@@ -32,8 +32,8 @@ const MOCK_DRUG_CHANGE_REPORT = {
       categoryColor: '#fff3e0',
       categoryTextColor: '#e65100',
       dosage: '1일 1정',
-      remainingDays: 31,
-      remainingPercent: 50,
+      remainingDays: 28,
+      remainingPercent: 47,
       remainingColor: '#4caf50',
       remainingUntil: '05.04',
     },
@@ -44,8 +44,8 @@ const MOCK_DRUG_CHANGE_REPORT = {
       categoryColor: '#e3f2fd',
       categoryTextColor: '#1565c0',
       dosage: '1일 1정',
-      remainingDays: 31,
-      remainingPercent: 50,
+      remainingDays: 28,
+      remainingPercent: 47,
       remainingColor: '#4caf50',
       remainingUntil: '05.04',
     },
@@ -53,7 +53,7 @@ const MOCK_DRUG_CHANGE_REPORT = {
   newDrugsDate: '2026.03.05 기준',
   newDrugs: [
     {
-      name: '이모프렐정 (복합제)',
+      name: '아모프렐정',
       description: 'amlodipine + losartan + chlorthalidone · 3성분 복합제',
       reason: '기존 단독제 2종 통합 처방',
       statusLabel: '복합제 신규',
@@ -61,33 +61,36 @@ const MOCK_DRUG_CHANGE_REPORT = {
     },
     {
       name: 'chlorthalidone 4.17mg',
-      description: '클로르탈리돈 (thiazide계 이뇨제) · 이모프렐 복합제 내 포함',
-      reason: '이전 처방에 없던 신규 성분',
+      description: '클로르탈리돈 (thiazide계 이뇨제) · 아모프렐정 내 포함',
+      reason: '신규 성분',
       statusLabel: '성분 신규',
       date: '2026.03.05',
     },
   ],
-  stoppedDate: '완료일 2026.03.04',
+  stoppedDate: '2026.03.04',
   stopped: [
     {
-      name: '코스카정 25mg',
-      description: 'losartan potassium · ARB 계열 항고혈압제',
-      reason: '복합제(이모프렐) 전환으로 단독 중단',
-      statusLabel: '중단',
-      date: '-2026.03.04',
+      name: '코스카정',
+      description: 'losartan potassium · ARB 항고혈압제',
+      detail: '25mg 단독 → 아모프렐정 내 16.67mg',
+      statusLabel: '전환',
+      statusType: 'switch',
+      date: '2026.03.05',
     },
     {
-      name: '명문암로디핀정 5mg',
-      description: 'amlodipine besylate · CCB 계열 항고혈압제',
-      reason: '복합제(이모프렐) 전환으로 단독 중단',
-      statusLabel: '중단',
-      date: '-2026.03.04',
+      name: '명문암로디핀정',
+      description: 'amlodipine besylate · CCB 항고혈압제',
+      detail: '5mg 단독 → 아모프렐정 내 1.67mg',
+      statusLabel: '전환',
+      statusType: 'switch',
+      date: '2026.03.05',
     },
     {
-      name: '레보딜정 5mg',
+      name: '레보틸정',
       description: 'levocetirizine dihydrochloride · 항히스타민제',
-      reason: '재처방 없이 완전 중단',
-      statusLabel: '중단',
+      detail: '5mg · 재처방 없이 완전 중단',
+      statusLabel: '완전 중단',
+      statusType: 'fullStop',
       date: '-2026.03.04',
     },
   ],
@@ -95,17 +98,15 @@ const MOCK_DRUG_CHANGE_REPORT = {
   changed: [
     {
       name: 'amlodipine (암로디핀)',
-      description: 'CCB 계열 · 단독정 → 복합제 내 용량 소정',
-      reason: '',
-      detail: '명문암로디핀정 5mg 단독 → 이모프렐 복합제 내 1.67mg',
+      description: 'CCB 항고혈압제 · 명문암로디핀정 → 아모프렐 복합제',
+      detail: '5mg 단독 → 아모프렐정 내 1.67mg',
       statusLabel: '용량 변경',
       date: '2026.03.05',
     },
     {
       name: 'losartan (로사르탄)',
-      description: 'ARB 계열 · 단독정 → 복합제 내 용량 소정',
-      reason: '',
-      detail: '코스카정 25mg 단독 → 이모프렐 복합제 내 16.67mg',
+      description: 'ARB 항고혈압제 · 코스카정 → 아모프렐 복합제',
+      detail: '25mg 단독 → 아모프렐정 내 16.67mg',
       statusLabel: '용량 변경',
       date: '2026.03.05',
     },
@@ -114,7 +115,9 @@ const MOCK_DRUG_CHANGE_REPORT = {
 
 // mock 응답 — 항상 처방 변경 리포트 반환
 export async function getMockDrugResponse(text, file) {
-  await new Promise((r) => setTimeout(r, 800));
+  // 1.5 ~ 2.5초 랜덤 딜레이로 "고민하는 느낌" 연출
+  const delay = 1500 + Math.random() * 1000;
+  await new Promise((r) => setTimeout(r, delay));
 
   return {
     reply: '환자의 최근 처방 변경 내역을 분석했습니다.',

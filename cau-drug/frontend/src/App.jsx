@@ -1,118 +1,118 @@
-import { useState, useRef, useEffect } from 'react';
-import Sidebar from './components/Sidebar.jsx';
-import ChatWindow from './components/ChatWindow.jsx';
-import ChatInput from './components/ChatInput.jsx';
+import { useState, useRef, useCallback } from 'react';
+import DrugChangeReport from './components/DrugChangeReport.jsx';
 import { getMockDrugResponse } from './mockResponse.js';
 import './App.css';
 
-const WELCOME_MSG = {
-  role: 'assistant',
-  content:
-    '안녕하세요! 약 처방 정보 도우미입니다.\n\n약품 목록이 담긴 엑셀 파일(.xlsx)을 첨부하시면, 각 약품의 효능·용법·주의사항 등을 요약해드립니다.',
-};
-
 function App() {
-  const [conversations, setConversations] = useState([
-    { id: Date.now(), title: '새 대화', messages: [WELCOME_MSG] },
-  ]);
-  const [activeId, setActiveId] = useState(conversations[0].id);
-  const [isLoading, setIsLoading] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const messagesEndRef = useRef(null);
+  const [state, setState] = useState('idle'); // idle | loading | done | error
+  const [report, setReport] = useState(null);
+  const [fileName, setFileName] = useState('');
+  const [dragging, setDragging] = useState(false);
+  const fileInputRef = useRef(null);
 
-  const activeConv = conversations.find((c) => c.id === activeId);
-  const messages = activeConv?.messages || [];
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
-
-  const updateMessages = (convId, newMessages) => {
-    setConversations((prev) =>
-      prev.map((c) => {
-        if (c.id !== convId) return c;
-        let title = c.title;
-        if (title === '새 대화') {
-          const firstUser = newMessages.find((m) => m.role === 'user');
-          if (firstUser) {
-            title = firstUser.content.substring(0, 30).replace(/\n/g, ' ');
-            if (firstUser.content.length > 30) title += '...';
-          }
-        }
-        return { ...c, messages: newMessages, title };
-      })
-    );
-  };
-
-  const sendMessage = async (text, file) => {
-    if ((!text.trim() && !file) || isLoading) return;
-
-    const userDisplay = file
-      ? `📎 ${file.name}${text.trim() ? '\n' + text : ''}`
-      : text;
-    const newMessages = [...messages, { role: 'user', content: userDisplay }];
-    updateMessages(activeId, newMessages);
-    setIsLoading(true);
-
+  const handleFile = useCallback(async (file) => {
+    if (!file) return;
+    setFileName(file.name);
+    setState('loading');
     try {
-      const data = await getMockDrugResponse(text, file);
-      updateMessages(activeId, [
-        ...newMessages,
-        {
-          role: 'assistant',
-          content: data.reply,
-          ...(data.drugChangeReport && { drugChangeReport: data.drugChangeReport }),
-        },
-      ]);
+      const data = await getMockDrugResponse('', file);
+      setReport(data.drugChangeReport);
+      setState('done');
     } catch {
-      updateMessages(activeId, [
-        ...newMessages,
-        { role: 'assistant', content: '응답 생성 중 오류가 발생했습니다.', isError: true },
-      ]);
-    } finally {
-      setIsLoading(false);
+      setState('error');
     }
-  };
+  }, []);
 
-  const newChat = () => {
-    const conv = { id: Date.now(), title: '새 대화', messages: [WELCOME_MSG] };
-    setConversations((prev) => [conv, ...prev]);
-    setActiveId(conv.id);
-  };
+  const handleDrop = useCallback((e) => {
+    e.preventDefault();
+    setDragging(false);
+    const file = e.dataTransfer.files[0];
+    handleFile(file);
+  }, [handleFile]);
 
-  const selectConversation = (id) => setActiveId(id);
+  const handleDragOver = useCallback((e) => {
+    e.preventDefault();
+    setDragging(true);
+  }, []);
 
-  const deleteConversation = (id) => {
-    const remaining = conversations.filter((c) => c.id !== id);
-    if (remaining.length === 0) { newChat(); return; }
-    setConversations(remaining);
-    if (activeId === id) setActiveId(remaining[0].id);
+  const handleDragLeave = useCallback(() => {
+    setDragging(false);
+  }, []);
+
+  const handleReset = () => {
+    setState('idle');
+    setReport(null);
+    setFileName('');
   };
 
   return (
     <div className="app-layout">
-      <Sidebar
-        conversations={conversations}
-        activeId={activeId}
-        isOpen={sidebarOpen}
-        onSelect={selectConversation}
-        onNew={newChat}
-        onDelete={deleteConversation}
-        onToggle={() => setSidebarOpen(!sidebarOpen)}
-      />
       <div className="app-main">
         <header className="app-header">
-          {!sidebarOpen && (
-            <button className="sidebar-toggle" onClick={() => setSidebarOpen(true)} aria-label="사이드바 열기">
-              ☰
-            </button>
-          )}
           <div className="header-left">
-            <h1>💊 중앙대학교 약 처방 정보 챗봇</h1>
+            <h1>💊 중앙대학교병원 약물 처방 내역 분석</h1>
           </div>
         </header>
-        <ChatWindow messages={messages} isLoading={isLoading} messagesEndRef={messagesEndRef} />
-        <ChatInput onSend={sendMessage} isLoading={isLoading} />
+
+        <div className={`app-content ${state === 'idle' ? 'app-content-center' : ''}`}>
+          {state === 'idle' && (
+            <div
+              className={`drop-zone ${dragging ? 'drop-zone-active' : ''}`}
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onClick={() => fileInputRef.current?.click()}
+              role="button"
+              tabIndex={0}
+              aria-label="파일 업로드 영역"
+            >
+              <div className="drop-zone-icon">📂</div>
+              <div className="drop-zone-text">
+                약품 목록 파일(.xslx 또는 .pdf)을<br />드래그하거나 클릭하여 업로드 해주세요
+              </div>
+              <div className="drop-zone-hint">환자의 약물 처방 내역을 자동으로 분석합니다</div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".xlsx,.xls,.csv"
+                className="drop-zone-input"
+                onChange={(e) => handleFile(e.target.files[0])}
+              />
+            </div>
+          )}
+
+          {state === 'loading' && (
+            <div className="loading-wrap">
+              <div className="loading-file">📎 {fileName}</div>
+              <div className="loading-spinner"></div>
+              <div className="loading-text">처방 변경 내역을 분석하고 있습니다</div>
+              <div className="typing-indicator" style={{ marginTop: '12px' }}>
+                <span className="typing-text">분석 중</span>
+                <span className="typing-dot"></span>
+                <span className="typing-dot"></span>
+                <span className="typing-dot"></span>
+              </div>
+            </div>
+          )}
+
+          {state === 'done' && report && (
+            <div className="result-wrap">
+              <div className="result-header">
+                <span className="result-file">📎 {fileName}</span>
+                <button className="reset-btn" onClick={handleReset}>새 파일 분석</button>
+              </div>
+              <DrugChangeReport data={report} />
+            </div>
+          )}
+
+          {state === 'error' && (
+            <div className="error-wrap">
+              <div className="error-icon">⚠️</div>
+              <div className="error-text">분석 중 오류가 발생했습니다</div>
+              <button className="reset-btn" onClick={handleReset}>다시 시도</button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -11,7 +11,10 @@ function ChatWindow({ messages, isLoading, messagesEndRef }) {
           <div className="message-avatar">💊</div>
           <div className="message-bubble bubble-assistant">
             <div className="typing-indicator">
-              <span></span><span></span><span></span>
+              <span className="typing-text">분석 중</span>
+              <span className="typing-dot"></span>
+              <span className="typing-dot"></span>
+              <span className="typing-dot"></span>
             </div>
           </div>
         </div>
